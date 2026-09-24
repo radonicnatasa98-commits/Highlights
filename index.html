@@ -59,8 +59,7 @@
 
   body.is-splash .bg-blur { opacity: 0; }
   body.is-splash header,
-  body.is-splash .intro,
-  body.is-splash .label { opacity: 0; }
+  body.is-splash .intro { opacity: 0; }
   body:has(.splash) .intro h1 { visibility: hidden; }
   body.is-splash .stage { transform: translateY(105%); }
   header { transition: opacity .8s ease; }
@@ -126,17 +125,6 @@
     position: absolute; left: 14px; bottom: 12px;
     color: rgba(255,255,255,.9);
     font-size: 12px; letter-spacing: .12em;
-  }
-
-  .label {
-    position: absolute; left: 0; top: 0;
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    display: flex; align-items: center; gap: 8px;
-    white-space: nowrap; pointer-events: none; z-index: 6;
-    transition: opacity .3s;
-  }
-  .label::before {
-    content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff;
   }
 
   /* ---------- Detail view ---------- */
@@ -226,7 +214,6 @@
 </div>
 
 <div class="stage" id="stage"></div>
-<div class="label" id="label"></div>
 
 <div class="veil" id="veil"></div>
 <section class="detail" id="detail" aria-hidden="true">
@@ -261,7 +248,6 @@ const N = CARDS.length;
 const bgOf = c => c.img ? `url("${c.img}")` : c.bg;
 
 const stage = document.getElementById("stage");
-const label = document.getElementById("label");
 
 const els = CARDS.map((c, i) => {
   const el = document.createElement("div");
@@ -294,7 +280,6 @@ layout();
 const xAt = t => x0 + A * (Math.pow(R, t) - 1);
 
 let target = 0, pos = 0;
-let lastActive = -1;
 
 function wrapT(t) {
   // porta t nell'intervallo [-4.5, 3.5) così il giro è infinito
@@ -305,7 +290,6 @@ function render() {
   pos += (target - pos) * 0.085;
   const maxH = H - 70;
 
-  let activeIdx = 0, best = Infinity;
   els.forEach((el, i) => {
     const t = wrapT(i - pos);
     const x = xAt(t);
@@ -319,18 +303,7 @@ function render() {
     el.style.opacity = fade;
     el.style.zIndex = Math.round((t + 10) * 10);
     el.style.visibility = (x > W || w < 1) ? "hidden" : "visible";
-    if (Math.abs(t) < best) { best = Math.abs(t); activeIdx = i; }
   });
-
-  // etichetta sopra la card attiva
-  const tA = wrapT(activeIdx - pos);
-  const xA = xAt(tA), wA = xAt(tA + 1) - xA, hA = Math.min(wA * 1.02, maxH);
-  label.style.transform = `translate3d(${xA}px, ${H - hA - 22}px, 0)`;
-  if (activeIdx !== lastActive) {
-    label.style.opacity = 0;
-    setTimeout(() => { label.textContent = CARDS[activeIdx].title; label.style.opacity = 1; }, 150);
-    lastActive = activeIdx;
-  }
   requestAnimationFrame(render);
 }
 requestAnimationFrame(render);
@@ -378,7 +351,6 @@ function enter() {
   const dest = document.querySelector(".intro h1");
   const lines = [...title.children], destLines = [...dest.children];
   splash.querySelector(".enter").style.display = "none";
-  label.style.visibility = "hidden";
 
   // ogni riga del titolo vola dalla posizione centrale a quella in alto a sinistra
   const moves = lines.map((line, k) => {
@@ -394,7 +366,6 @@ function enter() {
 
   Promise.all(moves.map(m => m.finished)).then(() => {
     splash.remove();
-    label.style.visibility = "";
     locked = false;
   });
 }

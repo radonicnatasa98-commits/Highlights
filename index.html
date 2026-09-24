@@ -37,6 +37,35 @@
     background: rgba(20, 50, 85, .18);
   }
 
+  .bg-blur { transition: opacity 1.2s ease; }
+
+  /* ---------- Schermata iniziale ---------- */
+  .splash {
+    position: fixed; inset: 0; z-index: 70;
+    display: grid; place-items: center;
+    cursor: pointer;
+  }
+  .splash h1 { text-align: center; }
+  .splash .enter {
+    position: absolute; left: 0; right: 0;
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+    font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(255,255,255,.75);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .splash:focus-visible { outline: 1px solid #fff; outline-offset: -8px; }
+
+  body.is-splash .bg-blur { opacity: 0; }
+  body.is-splash header,
+  body.is-splash .intro,
+  body.is-splash .label { opacity: 0; }
+  body:has(.splash) .intro h1 { visibility: hidden; }
+  body.is-splash .stage { transform: translateY(105%); }
+  header, .intro p { transition: opacity .8s ease; }
+  .stage { transition: transform 1.3s cubic-bezier(.7,0,.2,1); }
+
   /* ---------- Header ---------- */
   header {
     position: fixed; inset: 0 0 auto 0;
@@ -149,6 +178,11 @@
     pointer-events: none;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .stage, .bg-blur, header { transition: none; }
+    .splash .enter { animation: none; }
+  }
+
   @media (max-width: 700px) {
     h1 { font-size: 64px; }
     header nav { gap: 18px; }
@@ -157,10 +191,15 @@
   }
 </style>
 </head>
-<body>
+<body class="is-splash">
 
 <div class="bg"></div>
 <div class="bg-blur"></div>
+
+<div class="splash" id="splash" role="button" tabindex="0" aria-label="Entra">
+  <h1><span>Highlights</span><span>2026</span></h1>
+  <div class="enter">Clicca per entrare</div>
+</div>
 
 <header>
   <div class="logo">Highlights</div>
@@ -288,7 +327,7 @@ function render() {
 requestAnimationFrame(render);
 
 /* ---------- Input: rotella, touch, tastiera ---------- */
-let locked = false;
+let locked = true; // sbloccato quando si entra dalla schermata iniziale
 addEventListener("wheel", e => {
   if (locked) return;
   e.preventDefault();
@@ -321,6 +360,41 @@ addEventListener("keydown", e => {
   if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) target = Math.round(target) + 1;
   if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) target = Math.round(target) - 1;
 });
+
+/* ---------- Schermata iniziale → scala ---------- */
+const splash = document.getElementById("splash");
+function enter() {
+  if (!document.body.classList.contains("is-splash")) return;
+  const title = splash.querySelector("h1");
+  const dest = document.querySelector(".intro h1");
+  const lines = [...title.children], destLines = [...dest.children];
+  const introP = document.querySelector(".intro p");
+  splash.querySelector(".enter").style.display = "none";
+  introP.style.opacity = 0;
+  label.style.visibility = "hidden";
+
+  // ogni riga del titolo vola dalla posizione centrale a quella in alto a sinistra
+  const moves = lines.map((line, k) => {
+    const a = line.getBoundingClientRect(), b = destLines[k].getBoundingClientRect();
+    return line.animate(
+      [{ transform: "none" }, { transform: `translate(${b.left - a.left}px, ${b.top - a.top}px)` }],
+      { duration: 1100, delay: k * 70, easing: "cubic-bezier(.7,0,.2,1)", fill: "forwards" });
+  });
+  document.body.classList.remove("is-splash");
+  // la scala parte con le card piccole e scorre fino alla prima
+  pos = target = -2.5;
+  setTimeout(() => { target = 0; }, 350);
+
+  Promise.all(moves.map(m => m.finished)).then(() => {
+    splash.remove();
+    introP.style.opacity = "";
+    label.style.visibility = "";
+    locked = false;
+  });
+}
+splash.addEventListener("click", enter);
+splash.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); enter(); } });
+
 
 /* ---------- Apertura dettaglio ---------- */
 const veil = document.getElementById("veil");

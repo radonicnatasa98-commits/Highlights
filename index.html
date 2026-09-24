@@ -45,7 +45,8 @@
     display: grid; place-items: center;
     cursor: pointer;
   }
-  .splash h1 { text-align: center; }
+  /* stesso allineamento e interlinea del titolo finale, così il volo è fluido */
+  .splash h1 { text-align: left; line-height: 1.12; }
   .splash .enter {
     position: absolute; left: 0; right: 0;
     bottom: calc(36px + env(safe-area-inset-bottom, 0px));

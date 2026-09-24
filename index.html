@@ -123,6 +123,22 @@
     transition: transform .6s cubic-bezier(.2,.7,.2,1);
   }
   .card:hover .caption { opacity: 1; }
+
+  /* card "Coming soon": immagine sfocata e non apribile */
+  .card.is-soon { cursor: default; }
+  .card.is-soon .media {
+    filter: blur(14px) saturate(.9);
+    transform: scale(1.15);
+  }
+  .card.is-soon:hover .media { transform: scale(1.15); }
+  .card .soon {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    background: rgba(15, 35, 60, .25);
+    color: #fff; text-align: center;
+    font-size: clamp(9px, 1.4vw, 20px);
+    letter-spacing: .08em; white-space: nowrap;
+  }
   .card:hover .caption span { transform: none; }
   .card .num {
     position: absolute; left: 14px; bottom: 12px;
@@ -236,6 +252,7 @@
 /*
  * Le 8 card. Per usare una foto, imposta `img` con il percorso dell'immagine
  * (es. "img/gennaio.jpg"): prende il posto del gradiente.
+ * `soon: true` mostra la card sfocata con la scritta "Coming soon".
  */
 const CARDS = [
   { title: "Uno",     cat: "Evento",   month: "Gennaio",   img: "img/foto-1.png", bg: "linear-gradient(160deg,#f6d365,#fda085)" },
@@ -243,9 +260,9 @@ const CARDS = [
   { title: "Tre",     cat: "Progetto", month: "Marzo",     img: "img/foto-3.png", bg: "linear-gradient(160deg,#43e97b,#38f9d7)" },
   { title: "Quattro", cat: "Persone",  month: "Aprile",    img: "img/foto-4.png", bg: "linear-gradient(160deg,#fa709a,#fee140)" },
   { title: "Cinque",  cat: "Evento",   month: "Giugno",    img: "img/foto-1.png", bg: "linear-gradient(160deg,#30cfd0,#330867)" },
-  { title: "Sei",     cat: "Viaggio",  month: "Luglio",    img: "img/foto-2.png", bg: "linear-gradient(160deg,#a18cd1,#fbc2eb)" },
-  { title: "Sette",   cat: "Progetto", month: "Settembre", img: "img/foto-3.png", bg: "linear-gradient(160deg,#ff9a9e,#8e2de2)" },
-  { title: "Otto",    cat: "Persone",  month: "Dicembre",  img: "img/foto-4.png", bg: "linear-gradient(160deg,#232526,#bd4f6c)" },
+  { title: "Sei",     cat: "Viaggio",  month: "Luglio",    img: "img/foto-2.png", bg: "linear-gradient(160deg,#a18cd1,#fbc2eb)", soon: true },
+  { title: "Sette",   cat: "Progetto", month: "Settembre", img: "img/foto-3.png", bg: "linear-gradient(160deg,#ff9a9e,#8e2de2)", soon: true },
+  { title: "Otto",    cat: "Persone",  month: "Dicembre",  img: "img/foto-4.png", bg: "linear-gradient(160deg,#232526,#bd4f6c)", soon: true },
 ];
 const N = CARDS.length;
 const bgOf = c => c.img ? `url("${c.img}")` : c.bg;
@@ -255,7 +272,10 @@ const stage = document.getElementById("stage");
 const els = CARDS.map((c, i) => {
   const el = document.createElement("div");
   el.className = "card";
-  el.innerHTML = `<div class="media"></div><div class="caption"><span>Highlights title</span></div><div class="num">${String(i + 1).padStart(2, "0")}</div>`;
+  el.innerHTML = c.soon
+    ? `<div class="media"></div><div class="soon">Coming soon</div>`
+    : `<div class="media"></div><div class="caption"><span>Highlights title</span></div><div class="num">${String(i + 1).padStart(2, "0")}</div>`;
+  if (c.soon) el.classList.add("is-soon");
   el.querySelector(".media").style.backgroundImage = bgOf(c);
   el.addEventListener("click", () => onCardClick(i));
   stage.appendChild(el);
@@ -387,6 +407,7 @@ function onCardClick(i) {
   const t = wrapT(i - pos);
   // clic su una card non attiva: la porta avanti
   if (Math.abs(t) > 0.5) { target = Math.round(target + t); return; }
+  if (CARDS[i].soon) return;
   openDetail(i);
 }
 

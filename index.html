@@ -45,8 +45,10 @@
     display: grid; place-items: center;
     cursor: pointer;
   }
-  /* stesso allineamento e interlinea del titolo finale, così il volo è fluido */
-  .splash h1 { text-align: left; line-height: 1.12; }
+  /* titolo su una riga; stessa interlinea del titolo finale, così il volo è fluido */
+  .splash h1 { text-align: center; line-height: 1.12; }
+  .splash h1 span { display: inline-block; }
+  .splash h1 span + span { margin-left: .25em; }
   .splash .enter {
     position: absolute; left: 0; right: 0;
     bottom: calc(36px + env(safe-area-inset-bottom, 0px));

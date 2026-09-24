@@ -18,11 +18,23 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; overflow: hidden; }
   body {
-    background: var(--bg);
-    color: var(--ink);
+    background: #2d5c86;
+    color: #fff;
     font-family: var(--font);
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Sfondo ---------- */
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: url("img/sfondo.webp") center / cover no-repeat;
+  }
+  .bg-blur {
+    position: fixed; inset: 0; z-index: 1;
+    -webkit-backdrop-filter: blur(22px);
+    backdrop-filter: blur(22px);
+    background: rgba(20, 50, 85, .18);
   }
 
   /* ---------- Header ---------- */
@@ -45,18 +57,19 @@
   h1 {
     font-family: var(--font);
     font-weight: 300;
-    font-size: clamp(56px, 10.5vw, 168px);
-    line-height: .92;
+    font-size: 110px;
+    line-height: .95;
+    color: #fff;
     letter-spacing: -.02em;
   }
   h1 span { display: block; }
   .intro p {
     margin-top: 22px; max-width: 300px;
-    font-size: 13px; line-height: 1.5; color: var(--muted);
+    font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.8);
   }
 
   /* ---------- Staircase ---------- */
-  .stage { position: fixed; inset: 0; }
+  .stage { position: fixed; inset: 0; z-index: 2; }
   .card {
     position: absolute; bottom: 0; left: 0;
     overflow: hidden; cursor: pointer;
@@ -83,7 +96,7 @@
     transition: opacity .3s;
   }
   .label::before {
-    content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink);
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff;
   }
 
   /* ---------- Detail view ---------- */
@@ -92,7 +105,7 @@
     pointer-events: none; z-index: 30;
   }
   .detail {
-    position: fixed; inset: 0; background: var(--bg);
+    position: fixed; inset: 0; background: var(--bg); color: var(--ink);
     z-index: 40; overflow-y: auto; visibility: hidden;
   }
   .detail.open { visibility: visible; }
@@ -137,6 +150,7 @@
   }
 
   @media (max-width: 700px) {
+    h1 { font-size: 64px; }
     header nav { gap: 18px; }
     header nav a:nth-child(n+3) { display: none; }
     .intro p { font-size: 12px; max-width: 220px; }
@@ -144,6 +158,9 @@
 </style>
 </head>
 <body>
+
+<div class="bg"></div>
+<div class="bg-blur"></div>
 
 <header>
   <div class="logo">Highlights</div>

@@ -63,7 +63,7 @@
   body.is-splash .label { opacity: 0; }
   body:has(.splash) .intro h1 { visibility: hidden; }
   body.is-splash .stage { transform: translateY(105%); }
-  header, .intro p { transition: opacity .8s ease; }
+  header { transition: opacity .8s ease; }
   .stage { transition: transform 1.3s cubic-bezier(.7,0,.2,1); }
 
   /* ---------- Header ---------- */
@@ -93,10 +93,6 @@
   }
   h1 span { display: block; }
   .intro h1 { line-height: 1.12; }
-  .intro p {
-    margin-top: 22px; max-width: 300px;
-    font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.8);
-  }
 
   /* ---------- Staircase ---------- */
   .stage { position: fixed; inset: 0; z-index: 2; }
@@ -112,6 +108,20 @@
     transition: transform .8s cubic-bezier(.2,.7,.2,1);
   }
   .card:hover .media { transform: scale(1.04); }
+  .card .caption {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end;
+    padding: 0 16px 40px;
+    background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0) 55%);
+    color: #fff; font-size: clamp(14px, 1.6vw, 24px); line-height: 1.15;
+    opacity: 0; transition: opacity .45s ease;
+  }
+  .card .caption span {
+    transform: translateY(14px);
+    transition: transform .6s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover .caption { opacity: 1; }
+  .card:hover .caption span { transform: none; }
   .card .num {
     position: absolute; left: 14px; bottom: 12px;
     color: rgba(255,255,255,.9);
@@ -188,7 +198,6 @@
     h1 { font-size: 64px; }
     header nav { gap: 18px; }
     header nav a:nth-child(n+3) { display: none; }
-    .intro p { font-size: 12px; max-width: 220px; }
   }
 </style>
 </head>
@@ -214,7 +223,6 @@
 
 <div class="intro">
   <h1><span>Highlights</span><span>2026</span></h1>
-  <p>I momenti più importanti dell'anno, in otto capitoli.</p>
 </div>
 
 <div class="stage" id="stage"></div>
@@ -258,7 +266,7 @@ const label = document.getElementById("label");
 const els = CARDS.map((c, i) => {
   const el = document.createElement("div");
   el.className = "card";
-  el.innerHTML = `<div class="media"></div><div class="num">${String(i + 1).padStart(2, "0")}</div>`;
+  el.innerHTML = `<div class="media"></div><div class="caption"><span>Highlights title</span></div><div class="num">${String(i + 1).padStart(2, "0")}</div>`;
   el.querySelector(".media").style.backgroundImage = bgOf(c);
   el.addEventListener("click", () => onCardClick(i));
   stage.appendChild(el);
@@ -369,9 +377,7 @@ function enter() {
   const title = splash.querySelector("h1");
   const dest = document.querySelector(".intro h1");
   const lines = [...title.children], destLines = [...dest.children];
-  const introP = document.querySelector(".intro p");
   splash.querySelector(".enter").style.display = "none";
-  introP.style.opacity = 0;
   label.style.visibility = "hidden";
 
   // ogni riga del titolo vola dalla posizione centrale a quella in alto a sinistra
@@ -388,7 +394,6 @@ function enter() {
 
   Promise.all(moves.map(m => m.finished)).then(() => {
     splash.remove();
-    introP.style.opacity = "";
     label.style.visibility = "";
     locked = false;
   });

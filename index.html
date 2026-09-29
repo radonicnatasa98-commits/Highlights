@@ -288,13 +288,13 @@ const els = CARDS.map((c, i) => {
  * relativa (0 = card attiva), il bordo sinistro è x(t) = x0 + A·(Rᵗ − 1),
  * così lo scorrimento è continuo e ogni card cresce mentre avanza.
  */
-const R = 1.62;
+const R = 1.35; // crescita tra una card e la successiva (prima era 1.62: troppa differenza)
 let W, H, x0, w0, A;
 function layout() {
   W = innerWidth; H = innerHeight;
   const mobile = W < 700;
   x0 = W * (mobile ? 0.22 : 0.26);
-  w0 = W * (mobile ? 0.26 : 0.185);
+  w0 = W * (mobile ? 0.34 : 0.24);
   A = w0 / (R - 1);
 }
 addEventListener("resize", layout);

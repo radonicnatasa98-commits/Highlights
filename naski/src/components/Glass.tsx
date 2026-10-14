@@ -9,6 +9,8 @@ type Props = {
   borderWidth?: number;
   // Riempimento: gradiente bianco 50% del design, o un colore pieno.
   fill?: 'glass' | string;
+  // Bordo "riflesso" interno, come nei bottoni e nella card del calendario.
+  sheen?: boolean;
   style?: StyleProp<ViewStyle>;
   children?: ReactNode;
   onLayout?: (width: number, height: number) => void;
@@ -21,6 +23,7 @@ export function Glass({
   borderColor,
   borderWidth = 2,
   fill = 'glass',
+  sheen,
   style,
   children,
   onLayout: onSize,
@@ -56,28 +59,45 @@ export function Glass({
                 <Stop offset={0} stopColor="#ffffff" stopOpacity={0.5} />
                 <Stop offset={1} stopColor="#ffffff" stopOpacity={0} />
               </LinearGradient>
-              <LinearGradient
-                id={`s${id}`}
-                gradientUnits="userSpaceOnUse"
-                x1={bw + 0.2 * w}
-                y1={bw + 0.03 * h}
-                x2={bw + 0.875 * w}
-                y2={bw + 1.042 * h}
-              >
-                <Stop offset={0} stopColor="#ffffff" stopOpacity={1} />
-                <Stop offset={0.54} stopColor="#ffffff" stopOpacity={0} />
-                <Stop offset={1} stopColor="#ffffff" stopOpacity={0.77} />
-              </LinearGradient>
+              {sheen ? (
+                <LinearGradient
+                  id={`s${id}`}
+                  gradientUnits="userSpaceOnUse"
+                  x1={bw + 0.07 * w}
+                  y1={bw}
+                  x2={bw + 0.126 * w}
+                  y2={bw + 1.279 * h}
+                >
+                  <Stop offset={0} stopColor="#ffffff" stopOpacity={0.4} />
+                  <Stop offset={0.41} stopColor="#ffffff" stopOpacity={0} />
+                  <Stop offset={0.57} stopColor="#ffffff" stopOpacity={0} />
+                  <Stop offset={1} stopColor="#ffffff" stopOpacity={0.1} />
+                </LinearGradient>
+              ) : (
+                <LinearGradient
+                  id={`s${id}`}
+                  gradientUnits="userSpaceOnUse"
+                  x1={bw + 0.2 * w}
+                  y1={bw + 0.03 * h}
+                  x2={bw + 0.875 * w}
+                  y2={bw + 1.042 * h}
+                >
+                  <Stop offset={0} stopColor="#ffffff" stopOpacity={1} />
+                  <Stop offset={0.54} stopColor="#ffffff" stopOpacity={0} />
+                  <Stop offset={1} stopColor="#ffffff" stopOpacity={0.77} />
+                </LinearGradient>
+              )}
             </Defs>
             {fill !== 'none' && (
               <Rect x={bw} y={bw} width={w} height={h} rx={radius} fill={fill === 'glass' ? `url(#f${id})` : fill} />
             )}
+            {/* Bordo esterno per le superfici vetro, interno per quelle con riflesso. */}
             <Rect
-              x={bw / 2}
-              y={bw / 2}
-              width={w + bw}
-              height={h + bw}
-              rx={radius + bw / 2}
+              x={sheen ? bw * 1.5 : bw / 2}
+              y={sheen ? bw * 1.5 : bw / 2}
+              width={sheen ? w - bw : w + bw}
+              height={sheen ? h - bw : h + bw}
+              rx={sheen ? radius - bw / 2 : radius + bw / 2}
               fill="none"
               stroke={borderColor ?? `url(#s${id})`}
               strokeWidth={bw}

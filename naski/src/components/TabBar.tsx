@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -8,16 +9,17 @@ import { Icon } from './Icon';
 
 export type Tab = 'home' | 'calendar' | 'tracker' | 'reminders';
 
-const TABS: { key: Tab; icon: IconSvg; label: string }[] = [
-  { key: 'home', icon: homeSmile, label: 'Home' },
-  { key: 'calendar', icon: calendarTab, label: 'Calendario' },
+// Tracker AI e Promemoria non hanno ancora una schermata.
+const TABS: { key: Tab; icon: IconSvg; label: string; route?: '/home' | '/calendar' }[] = [
+  { key: 'home', icon: homeSmile, label: 'Home', route: '/home' },
+  { key: 'calendar', icon: calendarTab, label: 'Calendario', route: '/calendar' },
   { key: 'tracker', icon: star06, label: 'Tracker AI' },
   { key: 'reminders', icon: bell01, label: 'Promemoria' },
 ];
 
-type Props = { active: Tab; onChange?: (tab: Tab) => void };
+type Props = { active: Tab };
 
-export function TabBar({ active, onChange }: Props) {
+export function TabBar({ active }: Props) {
   const [width, setWidth] = useState(327);
   const index = TABS.findIndex((t) => t.key === active);
   // Icone da 24px distribuite tra i padding di 40px: passo tra un'icona e l'altra.
@@ -31,7 +33,13 @@ export function TabBar({ active, onChange }: Props) {
         </View>
       </View>
       {TABS.map((t) => (
-        <Pressable key={t.key} onPress={() => onChange?.(t.key)} hitSlop={12} accessibilityRole="tab" accessibilityLabel={t.label}>
+        <Pressable
+          key={t.key}
+          onPress={() => t.route && t.key !== active && router.replace(t.route)}
+          hitSlop={12}
+          accessibilityRole="tab"
+          accessibilityLabel={t.label}
+        >
           <Icon icon={t.icon} color={t.key === active ? colors.blue : colors.navy} />
         </Pressable>
       ))}

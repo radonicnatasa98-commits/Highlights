@@ -11,11 +11,13 @@ type Props = {
   variant?: 'primary' | 'outline';
   // "large": 48px, Avenir 16 (onboarding, Salva); "small": 40px, Gilmer 14 (Sign up, Login).
   size?: 'large' | 'small';
+  // Alcuni bottoni grandi del design (Elimina, Chiudi) usano Gilmer 16.
+  gilmer?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
-export function Button({ label, onPress, variant = 'primary', size = 'large', disabled, style }: Props) {
+export function Button({ label, onPress, variant = 'primary', size = 'large', gilmer, disabled, style }: Props) {
   const [w, setW] = useState(0);
   const id = useId().replace(/:/g, '');
   const h = size === 'large' ? 48 : 40;
@@ -52,7 +54,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'large', di
       <View pointerEvents="none">
         <Text
           style={[
-            size === 'large' ? styles.labelLarge : styles.labelSmall,
+            size === 'large' ? (gilmer ? styles.labelGilmer : styles.labelLarge) : styles.labelSmall,
             { color: primary ? colors.white : colors.navy },
           ]}
         >
@@ -76,5 +78,6 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.5 },
   pressed: { opacity: 0.85 },
   labelLarge: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
+  labelGilmer: { fontFamily: fonts.button, fontSize: 16, lineHeight: 16 },
   labelSmall: { fontFamily: fonts.button, fontSize: 14, lineHeight: 16 },
 });

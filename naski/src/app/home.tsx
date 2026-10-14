@@ -6,6 +6,7 @@ import { Icon } from '../components/Icon';
 import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
+import { dayKey, useEntries } from '../store/entries';
 import { calendar, logoMark, plusCircle } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
@@ -19,6 +20,7 @@ export default function Home() {
   const top = useDesignTop();
   const bottom = useDesignBottom();
   const [postIt, setPostIt] = useState(false);
+  const { add } = useEntries();
 
   return (
     <Screen background="home">
@@ -45,7 +47,14 @@ export default function Home() {
         <TabBar active="home" />
       </View>
 
-      <PostItSheet visible={postIt} onClose={() => setPostIt(false)} onSave={() => setPostIt(false)} />
+      <PostItSheet
+        visible={postIt}
+        onClose={() => setPostIt(false)}
+        onSave={({ text, tags }) => {
+          add({ type: 'postit', text, tags, date: dayKey(new Date()) });
+          setPostIt(false);
+        }}
+      />
     </Screen>
   );
 }

@@ -10,6 +10,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { EntriesProvider } from '../store/entries';
+
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     NunitoSans_400Regular,
@@ -24,12 +26,15 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: '#c6d7f6' } }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="signup" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="login" options={{ animation: 'slide_from_right' }} />
-        <Stack.Screen name="home" options={{ gestureEnabled: false }} />
-      </Stack>
+      <EntriesProvider>
+        <Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: '#c6d7f6' } }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="signup" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="login" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="home" options={{ gestureEnabled: false }} />
+          <Stack.Screen name="calendar" options={{ gestureEnabled: false }} />
+        </Stack>
+      </EntriesProvider>
     </SafeAreaProvider>
   );
 }

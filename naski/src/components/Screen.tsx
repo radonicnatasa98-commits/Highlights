@@ -21,11 +21,16 @@ export function useDesignBottom() {
   return Math.max(0, insets.bottom - 34);
 }
 
-type Props = { background?: keyof typeof backgrounds; children?: ReactNode };
+type Props = {
+  background?: keyof typeof backgrounds;
+  children?: ReactNode;
+  // Larghezza reale dello schermo dell'app (sul web può essere più stretta della finestra).
+  onWidth?: (width: number) => void;
+};
 
-export function Screen({ background = 'onboarding', children }: Props) {
+export function Screen({ background = 'onboarding', children, onWidth }: Props) {
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={onWidth && ((e) => onWidth(e.nativeEvent.layout.width))}>
       <StatusBar style="dark" />
       <Image source={backgrounds[background]} style={StyleSheet.absoluteFill} contentFit="cover" />
       {children}

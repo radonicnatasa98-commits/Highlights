@@ -57,7 +57,9 @@ const LOGO_ICON = { x: 160, y: 329, size: 56 };
 const ZOOM_SCALE = 48;
 
 export default function Onboarding() {
-  const { width } = useWindowDimensions();
+  const window = useWindowDimensions();
+  const [measured, setMeasured] = useState<number>();
+  const width = measured ?? window.width;
   const top = useDesignTop();
   const bottom = useDesignBottom();
   const offsetX = (width - 375) / 2;
@@ -97,7 +99,7 @@ export default function Onboarding() {
   };
 
   return (
-    <Screen>
+    <Screen onWidth={setMeasured}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: content }]} pointerEvents={splashDone ? 'auto' : 'none'}>
         <ScrollView
           ref={scroller}

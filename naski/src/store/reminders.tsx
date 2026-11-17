@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
+import { useStoredState } from '../hooks/useStoredState';
 import type { EntryType } from './entries';
 
 export type Time = { hour: number; minute: number };
@@ -23,6 +24,7 @@ type Store = {
   addFuture: (r: Omit<FutureReminder, 'id' | 'notificationId'>) => void;
   updateFuture: (id: string, date: string, time: Time) => void;
   removeFuture: (id: string) => void;
+  clearAll: () => void;
   // Messaggio di conferma da mostrare nella schermata Promemoria.
   notice: string | null;
   setNotice: (message: string | null) => void;
@@ -85,9 +87,13 @@ function cancel(id?: string) {
 const RemindersContext = createContext<Store | null>(null);
 
 export function RemindersProvider({ children }: { children: ReactNode }) {
-  const [daily, setDailyState] = useState({ enabled: false, time: { hour: 9, minute: 41 } as Time });
-  const [dailyId, setDailyId] = useState<string>();
-  const [future, setFuture] = useState<FutureReminder[]>([]);
+  // Promemoria salvati sul dispositivo, insieme agli identificativi delle notifiche programmate.
+  const [daily, setDailyState] = useStoredState('naski.daily', () => ({
+    enabled: false,
+    time: { hour: 9, minute: 41 } as Time,
+  }));
+  const [dailyId, setDailyId] = useStoredState<string | undefined>('naski.dailyNotification', () => undefined);
+  const [future, setFuture] = useStoredState<FutureReminder[]>('naski.future', () => []);
   const [notice, setNotice] = useState<string | null>(null);
 
   const store = useMemo<Store>(
@@ -122,10 +128,17 @@ export function RemindersProvider({ children }: { children: ReactNode }) {
         cancel(future.find((f) => f.id === id)?.notificationId);
         setFuture((list) => list.filter((f) => f.id !== id));
       },
+      clearAll: () => {
+        cancel(dailyId);
+        future.forEach((f) => cancel(f.notificationId));
+        setDailyId(undefined);
+        setDailyState({ enabled: false, time: { hour: 9, minute: 41 } });
+        setFuture([]);
+      },
       notice,
       setNotice,
     }),
-    [daily, dailyId, future, notice],
+    [daily, dailyId, future, notice, setDailyState, setDailyId, setFuture],
   );
 
   return <RemindersContext.Provider value={store}>{children}</RemindersContext.Provider>;

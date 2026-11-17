@@ -8,10 +8,15 @@ import {
 import { Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { EntriesProvider } from '../store/entries';
 import { RemindersProvider } from '../store/reminders';
+
+// La schermata di avvio con il logo resta finché i font non sono pronti.
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -22,6 +27,10 @@ export default function RootLayout() {
     DMSans_300Light,
     Roboto_500Medium,
   });
+
+  useEffect(() => {
+    if (loaded || error) SplashScreen.hideAsync().catch(() => {});
+  }, [loaded, error]);
 
   if (!loaded && !error) return null;
 

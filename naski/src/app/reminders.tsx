@@ -8,13 +8,14 @@ import { Button } from '../components/Button';
 import { EntryBox } from '../components/EntryBox';
 import { Glass } from '../components/Glass';
 import { Icon } from '../components/Icon';
+import { MenuButton } from '../components/MenuButton';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { Sheet } from '../components/Sheet';
 import { TabBar } from '../components/TabBar';
 import { TimeWheel } from '../components/TimeWheel';
 import { Toggle } from '../components/Toggle';
 import { formatDate, formatTime, Time, useReminders } from '../store/reminders';
-import { bell01, bellRinging, chevronDown, chevronUp, clock, menu } from '../theme/icons';
+import { bell01, bellRinging, chevronDown, chevronUp, clock } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 // Frame Promemoria_01–03, 14–16 e 17: promemoria giornaliero, capsula futura e lista dei promemoria.
@@ -55,9 +56,7 @@ export default function Reminders() {
         onScrollBeginDrag={() => setMenuFor(null)}
       >
         <View style={styles.menuRow}>
-          <Glass radius={4} style={styles.menu}>
-            <Icon icon={menu} color={colors.navy} />
-          </Glass>
+          <MenuButton />
         </View>
 
         <Glass radius={24} fill="rgba(255,255,255,0.2)" sheen style={styles.card}>
@@ -206,7 +205,6 @@ function Divider() {
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 24, gap: 16 },
   menuRow: { alignItems: 'flex-end', height: 38, marginBottom: 8 },
-  menu: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   card: { padding: 16, gap: 12 },
   cardTitle: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardTitleText: { fontFamily: fonts.heavy, fontSize: 16, lineHeight: 24, color: colors.navy },

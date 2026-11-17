@@ -4,12 +4,13 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { EntrySheet, EntrySheetMode } from '../components/EntrySheet';
 import { Glass } from '../components/Glass';
 import { Icon } from '../components/Icon';
+import { MenuButton } from '../components/MenuButton';
 import { MonthCalendar } from '../components/MonthCalendar';
 import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
 import { dayKey, Entry, useEntries } from '../store/entries';
-import { bookOpen, download, edit, menu, plus, search, stickerSquare } from '../theme/icons';
+import { bookOpen, download, edit, plus, search, stickerSquare } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 // Colore della barretta a sinistra di ogni scritto (Post-it come in Calendar_02).
@@ -35,9 +36,7 @@ export default function CalendarScreen() {
     <Screen background="home">
       <ScrollView contentContainerStyle={[styles.scroll, { paddingTop: top + 60, paddingBottom: bottom + 120 }]}>
         <View style={styles.menuRow}>
-          <Glass radius={4} style={styles.menu}>
-            <Icon icon={menu} color={colors.navy} />
-          </Glass>
+          <MenuButton />
         </View>
 
         <View style={styles.content}>
@@ -125,7 +124,6 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 24, gap: 24 },
   menuRow: { alignItems: 'flex-end', height: 38, marginBottom: 11 },
-  menu: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   content: { gap: 32 },
   ctas: { flexDirection: 'row', justifyContent: 'flex-end', gap: 16 },
   round: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },

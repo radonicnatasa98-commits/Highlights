@@ -36,4 +36,6 @@ Poi apri l'app **Expo Go** sul telefono e inquadra il QR code. Con `npx expo sta
 - Il font del design è Avenir: su iPhone è già installato; su Android e web viene usato Nunito Sans.
 - Le icone in `src/theme/icons.ts` sono generate dai vettori del file Figma.
 - Login, Google e Apple per ora non chiamano nessun servizio: portano direttamente alla Home.
-- Gli scritti restano in memoria finché l'app è aperta; all'avvio ci sono alcuni scritti di esempio nei primi giorni del mese (`src/store/entries.tsx`).
+- Scritti, promemoria e accesso restano salvati sul dispositivo (AsyncStorage). Al primo avvio ci sono alcuni scritti di esempio (`src/store/entries.tsx`).
+- Il menu in alto a destra ha "Esci" (torna all'onboarding) ed "Elimina i miei dati" (con conferma).
+- Icona, icona adattiva Android e schermata di avvio usano il simbolo Naski; identificativo `com.naski.app` per iOS e Android.

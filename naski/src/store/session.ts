@@ -19,3 +19,11 @@ export async function signIn() {
   } catch {}
   router.replace('/home');
 }
+
+// "Esci": dimentica l'accesso e torna all'onboarding.
+export async function signOut() {
+  try {
+    await AsyncStorage.removeItem(KEY);
+  } catch {}
+  router.replace('/');
+}

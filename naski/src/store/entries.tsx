@@ -1,4 +1,6 @@
-import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
+
+import { useStoredState } from '../hooks/useStoredState';
 
 export type EntryType = 'postit' | 'diario';
 
@@ -24,10 +26,20 @@ function exampleEntries(): Entry[] {
   const samples: (Omit<Entry, 'id' | 'date'> & { ago: number })[] = [
     { ago: 1, type: 'postit', text: 'Il caffè con mia sorella', tags: ['Famiglia'] },
     { ago: 2, type: 'postit', text: 'La cena con gli amici di sempre', tags: ['Amicizia', 'Famiglia'] },
-    { ago: 3, type: 'diario', text: 'Oggi ho finito il progetto a cui lavoravo da settimane. Sono grata alla squadra che mi ha aiutata e a me stessa per non aver mollato.', tags: ['Lavoro e studio'] },
+    {
+      ago: 3,
+      type: 'diario',
+      text: 'Oggi ho finito il progetto a cui lavoravo da settimane. Sono grata alla squadra che mi ha aiutata e a me stessa per non aver mollato.',
+      tags: ['Lavoro e studio'],
+    },
     { ago: 4, type: 'postit', text: 'Una lunga passeggiata al sole', tags: ['Salute e Benessere', 'Famiglia'] },
     { ago: 5, type: 'postit', text: 'Il messaggio di un vecchio amico', tags: ['Amicizia'] },
-    { ago: 8, type: 'diario', text: 'Giornata lenta e tranquilla: ho letto, cucinato e chiamato la nonna.', tags: ['Tempo libero', 'Famiglia'] },
+    {
+      ago: 8,
+      type: 'diario',
+      text: 'Giornata lenta e tranquilla: ho letto, cucinato e chiamato la nonna.',
+      tags: ['Tempo libero', 'Famiglia'],
+    },
     { ago: 10, type: 'postit', text: 'Yoga al mattino', tags: ['Salute e Benessere'] },
     { ago: 12, type: 'postit', text: 'Un pomeriggio di pioggia e un buon libro', tags: ['Altro'] },
     { ago: 15, type: 'postit', text: 'Pranzo della domenica a casa dei miei', tags: ['Famiglia'] },
@@ -40,13 +52,14 @@ type Store = {
   add: (entry: Omit<Entry, 'id'>) => void;
   update: (id: string, text: string) => void;
   remove: (id: string) => void;
+  clear: () => void;
 };
 
 const EntriesContext = createContext<Store | null>(null);
 
-// Per ora gli scritti restano in memoria finché l'app è aperta.
+// Gli scritti restano salvati sul dispositivo; al primo avvio ci sono quelli di esempio.
 export function EntriesProvider({ children }: { children: ReactNode }) {
-  const [entries, setEntries] = useState<Entry[]>(exampleEntries);
+  const [entries, setEntries] = useStoredState<Entry[]>('naski.entries', exampleEntries);
 
   const store = useMemo<Store>(
     () => ({
@@ -54,8 +67,9 @@ export function EntriesProvider({ children }: { children: ReactNode }) {
       add: (entry) => setEntries((list) => [...list, { ...entry, id: `${Date.now()}-${list.length}` }]),
       update: (id, text) => setEntries((list) => list.map((e) => (e.id === id ? { ...e, text } : e))),
       remove: (id) => setEntries((list) => list.filter((e) => e.id !== id)),
+      clear: () => setEntries([]),
     }),
-    [entries],
+    [entries, setEntries],
   );
 
   return <EntriesContext.Provider value={store}>{children}</EntriesContext.Provider>;

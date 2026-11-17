@@ -4,13 +4,14 @@ import { Platform, Pressable, Share, StyleSheet, Text, View } from 'react-native
 
 import { Glass } from '../components/Glass';
 import { Icon } from '../components/Icon';
+import { MenuButton } from '../components/MenuButton';
 import { TAGS } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
 import { TagBubbles } from '../components/TagBubbles';
 import { Toast } from '../components/Toast';
 import { dayKey, useEntries } from '../store/entries';
-import { menu, messageSmile } from '../theme/icons';
+import { messageSmile } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 type Period = 'week' | 'month';
@@ -74,9 +75,7 @@ export default function Tracker() {
   return (
     <Screen background="home" onWidth={setWidth}>
       <View style={[styles.menuRow, { top: top + 60 }]}>
-        <Glass radius={4} style={styles.menu}>
-          <Icon icon={menu} color={colors.navy} />
-        </Glass>
+        <MenuButton />
       </View>
 
       <View style={[styles.segmentWrap, { top: top + 122 }]}>
@@ -124,7 +123,6 @@ export default function Tracker() {
 
 const styles = StyleSheet.create({
   menuRow: { position: 'absolute', right: 24 },
-  menu: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   segmentWrap: { position: 'absolute', left: 24, right: 24 },
   segment: { height: 48, flexDirection: 'row', padding: 4, gap: 8 },
   segmentItem: { flex: 1 },

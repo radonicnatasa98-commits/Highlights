@@ -6,16 +6,16 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '../components/Button';
 import { EntryBox } from '../components/EntryBox';
-import { Glass } from '../components/Glass';
 import { Header } from '../components/Header';
 import { Icon } from '../components/Icon';
+import { MenuButton } from '../components/MenuButton';
 import { MonthCalendar } from '../components/MonthCalendar';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { Sheet } from '../components/Sheet';
 import { TabBar } from '../components/TabBar';
 import { Entry, useEntries } from '../store/entries';
 import { formatDate } from '../store/reminders';
-import { calendar, circlePlus, menu } from '../theme/icons';
+import { calendar, circlePlus } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 // Frame Promemoria_05–09: scegli un Post-it o un Diario già scritto, con filtro per data.
@@ -47,9 +47,7 @@ export default function ChooseEntry() {
     <Screen background="home">
       <ScrollView contentContainerStyle={[styles.scroll, { paddingTop: top + 60, paddingBottom: bottom + 200 }]}>
         <View style={styles.menuRow}>
-          <Glass radius={4} style={styles.menu}>
-            <Icon icon={menu} color={colors.navy} />
-          </Glass>
+          <MenuButton />
         </View>
         <Header title="Promemoria futuro" onBack={() => router.back()} />
         <Text style={styles.subtitle}>Seleziona il post-it o diario</Text>
@@ -167,7 +165,6 @@ export default function ChooseEntry() {
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 24, gap: 16 },
   menuRow: { alignItems: 'flex-end', height: 38, marginBottom: 8 },
-  menu: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   subtitle: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, color: colors.navy, textAlign: 'center' },
   filter: { padding: 8, gap: 12 },
   filterRow: { height: 40, padding: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

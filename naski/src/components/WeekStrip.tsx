@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useMemo } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -6,14 +5,10 @@ import Svg, { Path } from 'react-native-svg';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { dayKey } from '../store/entries';
-import { star06 } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 import { Glass } from './Glass';
-import { Icon } from './Icon';
 
 const LETTERS = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
-// La sfumatura del simbolo Naski.
-export const BRAND_GRADIENT = ['#2d5cf2', '#19a9f9'] as const;
 
 // Giorni di fila con almeno uno scritto, contando fino a oggi (o fino a ieri se oggi non hai ancora scritto).
 function streak(days: Set<string>) {
@@ -29,11 +24,11 @@ function streak(days: Set<string>) {
 
 function Check() {
   return (
-    <Svg width={11} height={11} viewBox="0 0 12 12">
+    <Svg width={12} height={12} viewBox="0 0 12 12">
       <Path
         d="M2.5 6.2l2.3 2.3 4.7-5"
         stroke="#ffffff"
-        strokeWidth={2}
+        strokeWidth={1.8}
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -42,14 +37,14 @@ function Check() {
   );
 }
 
-// La settimana corrente, da lunedì: una capsula di vetro per giorno, con il sigillo blu nei giorni in cui hai scritto.
+// La settimana corrente, da lunedì: cerchio pieno nei giorni in cui hai scritto, oggi con l'anello.
 export function WeekStrip({ days }: { days: Set<string> }) {
   const reduced = useReducedMotion();
   const today = dayKey(new Date());
   const wroteToday = days.has(today);
   const pop = useAnimatedNumber(wroteToday ? 1 : 0);
 
-  // Il sigillo di oggi "scoppia" quando scrivi il primo scritto della giornata.
+  // Il cerchio di oggi "scoppia" quando scrivi il primo scritto della giornata.
   useEffect(() => {
     if (!wroteToday) return pop.setValue(0);
     if (reduced) return pop.setValue(1);
@@ -66,50 +61,41 @@ export function WeekStrip({ days }: { days: Set<string> }) {
   }, [days, today]);
 
   const count = streak(days);
-  const doneThisWeek = week.filter((d) => d.done).length;
 
   return (
-    <Glass radius={24} sheen fill="rgba(255,255,255,0.32)" style={styles.card}>
+    <Glass radius={20} style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.label}>
-          QUESTA SETTIMANA <Text style={styles.labelCount}>· {doneThisWeek}/7</Text>
+        <Text style={styles.label}>La tua settimana</Text>
+        <Text style={styles.streak}>
+          {count === 0 ? 'Inizia oggi' : count === 1 ? '1 giorno di fila' : `${count} giorni di fila`}
         </Text>
-        <Glass radius={999} fill="rgba(255,255,255,0.7)" borderWidth={1} style={styles.pill}>
-          <Icon icon={star06} size={12} color={colors.blue} />
-          <Text style={styles.pillText}>
-            {count === 0 ? 'Inizia oggi' : count === 1 ? '1 giorno di fila' : `${count} giorni di fila`}
-          </Text>
-        </Glass>
       </View>
-
       <View style={styles.days}>
         {week.map((d) => {
-          const seal = d.done ? (
-            <View style={styles.glow}>
-              <LinearGradient colors={BRAND_GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.seal}>
-                <Check />
-              </LinearGradient>
+          const circle = (
+            <View
+              style={[
+                styles.circle,
+                d.done ? styles.circleDone : styles.circleEmpty,
+                d.future && styles.circleFuture,
+                d.isToday && styles.circleToday,
+              ]}
+            >
+              {d.done && <Check />}
             </View>
-          ) : (
-            <View style={[styles.pending, d.future && styles.pendingFuture]} />
           );
           return (
-            <View
-              key={d.key}
-              style={[styles.capsule, d.isToday && styles.capsuleToday, d.future && styles.capsuleFuture]}
-            >
+            <View key={d.key} style={styles.day}>
               <Text style={[styles.letter, d.isToday && styles.letterToday]}>{d.letter}</Text>
-              <View style={styles.sealBox}>
-                {d.isToday && d.done ? (
-                  <Animated.View
-                    style={{ transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }] }}
-                  >
-                    {seal}
-                  </Animated.View>
-                ) : (
-                  seal
-                )}
-              </View>
+              {d.isToday && d.done ? (
+                <Animated.View
+                  style={{ transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }] }}
+                >
+                  {circle}
+                </Animated.View>
+              ) : (
+                circle
+              )}
             </View>
           );
         })}
@@ -119,47 +105,17 @@ export function WeekStrip({ days }: { days: Set<string> }) {
 }
 
 const styles = StyleSheet.create({
-  card: { paddingHorizontal: 14, paddingTop: 12, paddingBottom: 12, gap: 10 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 },
-  label: { fontFamily: fonts.heavy, fontSize: 11, lineHeight: 14, letterSpacing: 1.2, color: 'rgba(18,37,91,0.55)' },
-  labelCount: { color: colors.navy },
-  pill: { height: 22, flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8 },
-  pillText: { fontFamily: fonts.heavy, fontSize: 11, lineHeight: 14, color: colors.navy },
+  card: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12, gap: 8 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  label: { fontFamily: fonts.heavy, fontSize: 14, lineHeight: 18, color: colors.navy },
+  streak: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 18, color: colors.blue },
   days: { flexDirection: 'row', justifyContent: 'space-between' },
-  capsule: {
-    width: 36,
-    height: 50,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 6,
-    paddingBottom: 6,
-    backgroundColor: 'rgba(255,255,255,0.28)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.6)',
-  },
-  capsuleToday: {
-    backgroundColor: 'rgba(255,255,255,0.85)',
-    borderColor: '#ffffff',
-    shadowColor: '#2d5cf2',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
-  capsuleFuture: { opacity: 0.55 },
-  letter: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 14, color: 'rgba(18,37,91,0.6)' },
+  day: { alignItems: 'center', gap: 4, width: 28 },
+  letter: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 16, color: 'rgba(18,37,91,0.7)' },
   letterToday: { fontFamily: fonts.heavy, color: colors.navy },
-  sealBox: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
-  glow: {
-    borderRadius: 10,
-    shadowColor: '#2d5cf2',
-    shadowOpacity: 0.45,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 4,
-  },
-  seal: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  pending: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(18,37,91,0.18)' },
-  pendingFuture: { backgroundColor: 'rgba(18,37,91,0.1)' },
+  circle: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  circleDone: { backgroundColor: '#2d5cf2' },
+  circleEmpty: { backgroundColor: 'rgba(255,255,255,0.45)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.9)' },
+  circleFuture: { opacity: 0.5 },
+  circleToday: { borderWidth: 2, borderColor: colors.navy },
 });

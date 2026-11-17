@@ -41,7 +41,7 @@ export default function Home() {
         <BreathingLogo />
       </Appear>
 
-      <Appear order={1} style={[styles.week, { top: top + 104 }]}>
+      <Appear order={1} style={[styles.week, { top: top + 112 }]}>
         <WeekStrip days={days} />
       </Appear>
 

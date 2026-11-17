@@ -36,7 +36,7 @@ const PAGES = [
   },
   {
     title: 'Imposta il tuo promemoria giornaliero e futuro',
-    body: 'Attiva il tuo Daily Ring: un promemoria gentile per non dimenticare di scrivere ogni giorno ciò per cui sei grato.',
+    body: 'Attiva il tuo Daily Ring: un promemoria gentile per non dimenticare di scrivere ogni giorno ciò per cui provi gratitudine.',
     kind: 'bell' as ArtKind,
     image: require('../../assets/images/bell.png'),
     frame: { x: 86, y: 164, w: 203, h: 250 },
@@ -194,8 +194,8 @@ export default function Onboarding() {
         </View>
 
         <View style={[styles.buttons, { bottom: bottom + 32 }]}>
-          <Button label="Create an account" onPress={() => router.push('/signup')} />
-          <Button label="Log in" variant="outline" onPress={() => router.push('/login')} />
+          <Button label="Crea un account" onPress={() => router.push('/signup')} />
+          <Button label="Accedi" variant="outline" onPress={() => router.push('/login')} />
         </View>
       </Animated.View>
 

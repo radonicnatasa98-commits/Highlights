@@ -8,7 +8,7 @@ import { Button } from '../components/Button';
 import { EntryBox } from '../components/EntryBox';
 import { Glass } from '../components/Glass';
 import { Icon } from '../components/Icon';
-import { MenuButton } from '../components/MenuButton';
+import { TopBar } from '../components/TopBar';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { Sheet } from '../components/Sheet';
 import { TabBar } from '../components/TabBar';
@@ -56,7 +56,7 @@ export default function Reminders() {
         onScrollBeginDrag={() => setMenuFor(null)}
       >
         <View style={styles.menuRow}>
-          <MenuButton />
+          <TopBar title="Promemoria" />
         </View>
 
         <Glass radius={24} fill="rgba(255,255,255,0.2)" sheen style={styles.card}>
@@ -171,7 +171,7 @@ export default function Reminders() {
           value={text}
           onChangeText={setText}
           multiline
-          placeholder="Ricorda al te del futuro qualcosa per cui sei grato adesso..."
+          placeholder="Ricorda al te del futuro qualcosa per cui provi gratitudine adesso..."
           placeholderTextColor={colors.inputText}
           selectionColor={colors.inputText}
           style={styles.input}
@@ -204,7 +204,7 @@ function Divider() {
 
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 24, gap: 16 },
-  menuRow: { alignItems: 'flex-end', height: 38, marginBottom: 8 },
+  menuRow: { marginBottom: 6 },
   card: { padding: 16, gap: 12 },
   cardTitle: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardTitleText: { fontFamily: fonts.heavy, fontSize: 16, lineHeight: 24, color: colors.navy },

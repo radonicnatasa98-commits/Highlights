@@ -9,15 +9,15 @@ type Props = { onGoogle?: () => void; onApple?: () => void };
 export function SocialButtons({ onGoogle, onApple }: Props) {
   return (
     <View style={styles.wrap}>
-      <Text style={styles.or}>Or sign up with</Text>
+      <Text style={styles.or}>Oppure registrati con</Text>
       <View style={styles.buttons}>
         <Pressable onPress={onGoogle} style={({ pressed }) => [styles.btn, styles.google, pressed && styles.pressed]}>
           <Icon icon={googleLogo} />
-          <Text style={[styles.label, styles.googleLabel]}>Continue with Google</Text>
+          <Text style={[styles.label, styles.googleLabel]}>Continua con Google</Text>
         </Pressable>
         <Pressable onPress={onApple} style={({ pressed }) => [styles.btn, styles.apple, pressed && styles.pressed]}>
           <Icon icon={appleLogo} />
-          <Text style={[styles.label, styles.appleLabel]}>Continue with Apple</Text>
+          <Text style={[styles.label, styles.appleLabel]}>Continua con Apple</Text>
         </Pressable>
       </View>
     </View>

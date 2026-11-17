@@ -76,7 +76,7 @@ export function EntrySheet({ entry, mode, onClose, onSave, onDelete }: Props) {
 
 function ShareRow({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-  const message = `Oggi sono grato per: ${text}`;
+  const message = `Oggi provo gratitudine per: ${text}`;
 
   const copy = async () => {
     await Clipboard.setStringAsync(message);
@@ -98,7 +98,7 @@ function ShareRow({ text }: { text: string }) {
         <View style={[styles.shareCircle, styles.linkCircle]}>
           <Icon icon={link} color={colors.navy} />
         </View>
-        <Text style={styles.shareLabel}>{copied ? 'Copiato' : 'Copy link'}</Text>
+        <Text style={styles.shareLabel}>{copied ? 'Copiato' : 'Copia link'}</Text>
       </Pressable>
       <Pressable style={styles.shareItem} onPress={whatsappShare} accessibilityRole="button">
         <LinearGradient colors={['#61fd7d', '#25cf43']} style={styles.shareCircle}>

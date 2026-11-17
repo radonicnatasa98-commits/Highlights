@@ -8,22 +8,22 @@ import { colors, fonts } from '../theme/tokens';
 import { Glass } from './Glass';
 import { Icon } from './Icon';
 
-// Nel design mese e giorni della settimana sono in inglese ("October 2025", "Mo Tu …").
+// Mesi e giorni della settimana in italiano, come il resto dell'app.
 const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'Gennaio',
+  'Febbraio',
+  'Marzo',
+  'Aprile',
+  'Maggio',
+  'Giugno',
+  'Luglio',
+  'Agosto',
+  'Settembre',
+  'Ottobre',
+  'Novembre',
+  'Dicembre',
 ];
-const WEEKDAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const WEEKDAYS = ['Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa', 'Do'];
 
 type Cell = { date: Date; inMonth: boolean } | null;
 

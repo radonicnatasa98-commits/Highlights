@@ -4,7 +4,7 @@ import { Platform, Pressable, Share, StyleSheet, Text, View } from 'react-native
 
 import { Glass } from '../components/Glass';
 import { Icon } from '../components/Icon';
-import { MenuButton } from '../components/MenuButton';
+import { TopBar } from '../components/TopBar';
 import { TAGS } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
@@ -75,7 +75,7 @@ export default function Tracker() {
   return (
     <Screen background="home" onWidth={setWidth}>
       <View style={[styles.menuRow, { top: top + 60 }]}>
-        <MenuButton />
+        <TopBar title="Tracker AI" />
       </View>
 
       <View style={[styles.segmentWrap, { top: top + 122 }]}>
@@ -122,7 +122,7 @@ export default function Tracker() {
 }
 
 const styles = StyleSheet.create({
-  menuRow: { position: 'absolute', right: 24 },
+  menuRow: { position: 'absolute', left: 24, right: 24 },
   segmentWrap: { position: 'absolute', left: 24, right: 24 },
   segment: { height: 48, flexDirection: 'row', padding: 4, gap: 8 },
   segmentItem: { flex: 1 },

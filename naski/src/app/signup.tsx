@@ -13,8 +13,8 @@ import { checkCircle, xCircleSmall } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 const RULES = [
-  { label: '8 characters', test: (p: string) => p.length >= 8 },
-  { label: '1 number or special character', test: (p: string) => /[^A-Za-z]/.test(p) },
+  { label: '8 caratteri', test: (p: string) => p.length >= 8 },
+  { label: '1 numero o carattere speciale', test: (p: string) => /[^A-Za-z]/.test(p) },
 ];
 
 // Formatta la data mentre si scrive: 09011997 → 09/01/1997.
@@ -55,15 +55,34 @@ export default function SignUp() {
   return (
     <Screen>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={[styles.content, { paddingTop: top + 60 }]} keyboardShouldPersistTaps="handled">
-          <Header title="Sign up" onBack={() => router.back()} />
+        <ScrollView
+          contentContainerStyle={[styles.content, { paddingTop: top + 60 }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Header title="Registrati" onBack={() => router.back()} />
           <View style={styles.form}>
             <View style={styles.fields}>
-              <TextField ref={firstRef} label="First name*" value={first} onChangeText={setFirst} autoComplete="given-name" returnKeyType="next" onSubmitEditing={() => lastRef.current?.focus()} />
-              <TextField ref={lastRef} label="Last name*" value={last} onChangeText={setLast} autoComplete="family-name" returnKeyType="next" onSubmitEditing={() => birthdayRef.current?.focus()} />
+              <TextField
+                ref={firstRef}
+                label="Nome*"
+                value={first}
+                onChangeText={setFirst}
+                autoComplete="given-name"
+                returnKeyType="next"
+                onSubmitEditing={() => lastRef.current?.focus()}
+              />
+              <TextField
+                ref={lastRef}
+                label="Cognome*"
+                value={last}
+                onChangeText={setLast}
+                autoComplete="family-name"
+                returnKeyType="next"
+                onSubmitEditing={() => birthdayRef.current?.focus()}
+              />
               <TextField
                 ref={birthdayRef}
-                label="Birthday (mm/dd/yyy)"
+                label="Data di nascita (gg/mm/aaaa)"
                 dropdown
                 value={birthday}
                 onChangeText={(t) => setBirthday(formatBirthday(t))}
@@ -97,12 +116,14 @@ export default function SignUp() {
                 />
                 {passwordError && (
                   <View style={styles.rules}>
-                    <Text style={[styles.ruleText, { color: colors.error }]}>The password must contain at least:</Text>
+                    <Text style={[styles.ruleText, { color: colors.error }]}>La password deve contenere almeno:</Text>
                     <View style={styles.ruleList}>
                       {RULES.map((r, i) => (
                         <View key={r.label} style={styles.rule}>
                           <Icon icon={passed[i] ? checkCircle : xCircleSmall} />
-                          <Text style={[styles.ruleText, { color: passed[i] ? colors.success : colors.error }]}>{r.label}</Text>
+                          <Text style={[styles.ruleText, { color: passed[i] ? colors.success : colors.error }]}>
+                            {r.label}
+                          </Text>
                         </View>
                       ))}
                     </View>
@@ -110,7 +131,7 @@ export default function SignUp() {
                 )}
               </View>
             </View>
-            <Button label="Sign Up" size="small" onPress={submit} />
+            <Button label="Registrati" size="small" onPress={submit} />
           </View>
           <SocialButtons onGoogle={signIn} onApple={signIn} />
         </ScrollView>

@@ -9,10 +9,11 @@ import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
 import { Toast } from '../components/Toast';
+import { TopBar } from '../components/TopBar';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { dayKey, EntryType, useEntries } from '../store/entries';
-import { calendar, logoMark, plusCircle } from '../theme/icons';
+import { bookOpen, calendar, logoMark, plusCircle, stickerSquare, type IconSvg } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 function today() {
@@ -37,8 +38,8 @@ export default function Home() {
 
   return (
     <Screen background="home" breathing>
-      <Appear order={0} style={[styles.logo, { top: top + 56 }]}>
-        <BreathingLogo />
+      <Appear order={0} style={[styles.topBar, { top: top + 60 }]}>
+        <TopBar left={<BreathingLogo />} />
       </Appear>
 
       <View style={[styles.content, { top: top + 222 }]}>
@@ -56,6 +57,8 @@ export default function Home() {
           <Appear order={3}>
             <Card
               label="Post-it"
+              hint="Una frase breve, al massimo 30 caratteri"
+              icon={stickerSquare}
               open={writing && kind === 'postit'}
               glow={saved.postit}
               onPress={() => open('postit')}
@@ -64,6 +67,8 @@ export default function Home() {
           <Appear order={4}>
             <Card
               label="Diario"
+              hint="Un pensiero più lungo, senza limiti"
+              icon={bookOpen}
               open={writing && kind === 'diario'}
               glow={saved.diario}
               onPress={() => open('diario')}
@@ -122,6 +127,9 @@ function BreathingLogo() {
 
 type CardProps = {
   label: string;
+  // Riga che spiega la differenza tra Post-it e Diario.
+  hint: string;
+  icon: IconSvg;
   onPress?: () => void;
   // Foglio aperto: il "+" resta ruotato di 90°.
   open?: boolean;
@@ -129,7 +137,7 @@ type CardProps = {
   glow?: number;
 };
 
-function Card({ label, onPress, open = false, glow = 0 }: CardProps) {
+function Card({ label, hint, icon, onPress, open = false, glow = 0 }: CardProps) {
   const press = useAnimatedNumber(0);
   const turn = useAnimatedNumber(0);
   const flash = useAnimatedNumber(0);
@@ -183,7 +191,13 @@ function Card({ label, onPress, open = false, glow = 0 }: CardProps) {
               ]}
             />
           </View>
-          <Text style={styles.cardLabel}>{label}</Text>
+          <View style={styles.cardText}>
+            <View style={styles.cardTitle}>
+              <Icon icon={icon} size={20} color={colors.navy} />
+              <Text style={styles.cardLabel}>{label}</Text>
+            </View>
+            <Text style={styles.cardHint}>{hint}</Text>
+          </View>
           <Animated.View
             style={{
               transform: [{ rotate: turn.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) }],
@@ -198,7 +212,7 @@ function Card({ label, onPress, open = false, glow = 0 }: CardProps) {
 }
 
 const styles = StyleSheet.create({
-  logo: { position: 'absolute', alignSelf: 'center' },
+  topBar: { position: 'absolute', left: 24, right: 24 },
   content: { position: 'absolute', left: 24, right: 24, gap: 32 },
   heading: { gap: 16, alignItems: 'center' },
   date: { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -214,6 +228,9 @@ const styles = StyleSheet.create({
   },
   clip: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 30, overflow: 'hidden' },
   flash: { backgroundColor: '#ffffff', borderRadius: 30 },
+  cardText: { flex: 1, gap: 6, paddingRight: 12 },
+  cardTitle: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardLabel: { fontFamily: fonts.heavy, fontSize: 18, lineHeight: 24, color: colors.navy },
+  cardHint: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18, color: 'rgba(18,37,91,0.7)' },
   tab: { position: 'absolute', left: 24, right: 24 },
 });

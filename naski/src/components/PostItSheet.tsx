@@ -60,7 +60,7 @@ export function PostItSheet({ visible, kind = 'postit', onClose, onSave }: Props
           onChangeText={setText}
           multiline
           scrollEnabled
-          placeholder="Oggi sono grato per..."
+          placeholder="Oggi provo gratitudine per..."
           placeholderTextColor={colors.inputText}
           selectionColor={colors.inputText}
           style={styles.diary}
@@ -72,7 +72,7 @@ export function PostItSheet({ visible, kind = 'postit', onClose, onSave }: Props
             value={text}
             onChangeText={setText}
             maxLength={POST_IT_MAX}
-            placeholder="Oggi sono grato per..."
+            placeholder="Oggi provo gratitudine per..."
             placeholderTextColor={colors.inputText}
             selectionColor={colors.inputText}
             style={styles.input}

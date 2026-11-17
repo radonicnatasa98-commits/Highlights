@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { EntrySheet, EntrySheetMode } from '../components/EntrySheet';
 import { Glass } from '../components/Glass';
 import { Icon } from '../components/Icon';
-import { MenuButton } from '../components/MenuButton';
+import { TopBar } from '../components/TopBar';
 import { MonthCalendar } from '../components/MonthCalendar';
 import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
@@ -36,7 +36,7 @@ export default function CalendarScreen() {
     <Screen background="home">
       <ScrollView contentContainerStyle={[styles.scroll, { paddingTop: top + 60, paddingBottom: bottom + 120 }]}>
         <View style={styles.menuRow}>
-          <MenuButton />
+          <TopBar title="Calendario" />
         </View>
 
         <View style={styles.content}>
@@ -79,7 +79,11 @@ export default function CalendarScreen() {
                   </View>
                 </View>
                 <View style={styles.entryIcons}>
-                  <Pressable onPress={() => setOpen({ entry, mode: 'share' })} hitSlop={8} accessibilityLabel="Condividi">
+                  <Pressable
+                    onPress={() => setOpen({ entry, mode: 'share' })}
+                    hitSlop={8}
+                    accessibilityLabel="Condividi"
+                  >
                     <Icon icon={download} color={colors.navy} />
                   </Pressable>
                   <Pressable onPress={() => setOpen({ entry, mode: 'edit' })} hitSlop={8} accessibilityLabel="Modifica">
@@ -123,7 +127,7 @@ export default function CalendarScreen() {
 
 const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 24, gap: 24 },
-  menuRow: { alignItems: 'flex-end', height: 38, marginBottom: 11 },
+  menuRow: { marginBottom: 9 },
   content: { gap: 32 },
   ctas: { flexDirection: 'row', justifyContent: 'flex-end', gap: 16 },
   round: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },

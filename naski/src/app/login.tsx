@@ -22,7 +22,7 @@ export default function Login() {
     <Screen>
       <KeyboardAvoidingView style={[styles.flex, { paddingTop: top + 60, paddingBottom: bottom + 95 }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.side}>
-          <Header title="Login" onBack={() => router.back()} />
+          <Header title="Accedi" onBack={() => router.back()} />
         </View>
         {/* In Login_01 il modulo è centrato verticalmente nell'area sotto l'intestazione. */}
         <View style={styles.center}>
@@ -50,7 +50,7 @@ export default function Login() {
                 onSubmitEditing={submit}
               />
             </View>
-            <Button label="Login" size="small" disabled={!ready} onPress={submit} />
+            <Button label="Accedi" size="small" disabled={!ready} onPress={submit} />
           </View>
         </View>
       </KeyboardAvoidingView>

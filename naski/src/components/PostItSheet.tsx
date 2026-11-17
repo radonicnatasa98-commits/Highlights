@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import type { EntryType } from '../store/entries';
 import { xClose } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 import { Button } from './Button';
@@ -20,10 +21,17 @@ export const TAGS = [
 
 export type PostIt = { text: string; tags: string[] };
 
-type Props = { visible: boolean; onClose: () => void; onSave: (postIt: PostIt) => void };
+type Props = {
+  visible: boolean;
+  // "postit": una riga di massimo 30 caratteri; "diario": un pensiero lungo, senza limite.
+  kind?: EntryType;
+  onClose: () => void;
+  onSave: (postIt: PostIt) => void;
+};
 
-// HomePage_02 / HomePage_03: foglio "Post-it" con testo di massimo 30 caratteri e tag selezionabili.
-export function PostItSheet({ visible, onClose, onSave }: Props) {
+// HomePage_02 / HomePage_03: foglio di scrittura con i tag selezionabili, per il Post-it e per il Diario.
+export function PostItSheet({ visible, kind = 'postit', onClose, onSave }: Props) {
+  const diary = kind === 'diario';
   const [text, setText] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const input = useRef<TextInput>(null);
@@ -33,30 +41,48 @@ export function PostItSheet({ visible, onClose, onSave }: Props) {
     onSave({ text: text.trim(), tags });
   };
 
-  const toggle = (label: string) =>
-    setTags((t) => (t.includes(label) ? t.filter((x) => x !== label) : [...t, label]));
+  const toggle = (label: string) => setTags((t) => (t.includes(label) ? t.filter((x) => x !== label) : [...t, label]));
 
   return (
     <Sheet
       visible={visible}
-      title="Post-it"
+      title={diary ? 'Diario' : 'Post-it'}
       onClose={onClose}
       onClosed={() => {
         setText('');
         setTags([]);
       }}
     >
-      <TextInput
-        ref={input}
-        value={text}
-        onChangeText={setText}
-        maxLength={POST_IT_MAX}
-        placeholder="Oggi sono grato per..."
-        placeholderTextColor={colors.inputText}
-        selectionColor={colors.inputText}
-        style={styles.input}
-        returnKeyType="done"
-      />
+      {diary ? (
+        <TextInput
+          ref={input}
+          value={text}
+          onChangeText={setText}
+          multiline
+          scrollEnabled
+          placeholder="Oggi sono grato per..."
+          placeholderTextColor={colors.inputText}
+          selectionColor={colors.inputText}
+          style={styles.diary}
+        />
+      ) : (
+        <View style={styles.postIt}>
+          <TextInput
+            ref={input}
+            value={text}
+            onChangeText={setText}
+            maxLength={POST_IT_MAX}
+            placeholder="Oggi sono grato per..."
+            placeholderTextColor={colors.inputText}
+            selectionColor={colors.inputText}
+            style={styles.input}
+            returnKeyType="done"
+          />
+          <Text style={[styles.counter, text.length === POST_IT_MAX && styles.counterFull]}>
+            {text.length}/{POST_IT_MAX}
+          </Text>
+        </View>
+      )}
 
       <View style={styles.footer}>
         <View style={styles.tagsBlock}>
@@ -94,6 +120,27 @@ const styles = StyleSheet.create({
     color: colors.inputText,
     textAlign: 'center',
     padding: 0,
+    outlineStyle: 'none',
+  } as object,
+  postIt: { gap: 6 },
+  counter: {
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: 16,
+    color: 'rgba(1,51,101,0.45)',
+    textAlign: 'center',
+  },
+  counterFull: { color: '#ff850f' },
+  // Il diario occupa tutto lo spazio libero sopra i tag e scorre quando il testo è lungo.
+  diary: {
+    flex: 1,
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    lineHeight: 22,
+    color: colors.inputText,
+    textAlignVertical: 'top',
+    padding: 0,
+    marginBottom: 24,
     outlineStyle: 'none',
   } as object,
   footer: { gap: 48 },

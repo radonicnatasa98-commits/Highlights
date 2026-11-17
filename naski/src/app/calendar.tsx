@@ -9,7 +9,7 @@ import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
 import { dayKey, Entry, useEntries } from '../store/entries';
-import { download, edit, menu, plus, search, stickerSquare } from '../theme/icons';
+import { bookOpen, download, edit, menu, plus, search, stickerSquare } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
 // Colore della barretta a sinistra di ogni scritto (Post-it come in Calendar_02).
@@ -71,7 +71,7 @@ export default function CalendarScreen() {
                   <View style={[styles.rail, { backgroundColor: RAIL[entry.type] }]} />
                   <View style={styles.entryBody}>
                     <View style={styles.entryTitle}>
-                      <Icon icon={stickerSquare} color={colors.navy} />
+                      <Icon icon={entry.type === 'postit' ? stickerSquare : bookOpen} size={16} color={colors.navy} />
                       <Text style={styles.entryType}>{entry.type === 'postit' ? 'Post-it' : 'Diario'}</Text>
                     </View>
                     <Text style={styles.entryText} numberOfLines={2}>

@@ -11,7 +11,7 @@ import { TabBar } from '../components/TabBar';
 import { Toast } from '../components/Toast';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
-import { dayKey, useEntries } from '../store/entries';
+import { dayKey, EntryType, useEntries } from '../store/entries';
 import { calendar, logoMark, plusCircle } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
@@ -24,8 +24,14 @@ function today() {
 export default function Home() {
   const top = useDesignTop();
   const bottom = useDesignBottom();
-  const [postIt, setPostIt] = useState(false);
-  const [saved, setSaved] = useState(0);
+  // Foglio aperto (Post-it o Diario); "kind" resta impostato anche durante l'animazione di chiusura.
+  const [writing, setWriting] = useState(false);
+  const [kind, setKind] = useState<EntryType>('postit');
+  const [saved, setSaved] = useState<{ postit: number; diario: number }>({ postit: 0, diario: 0 });
+  const open = (k: EntryType) => {
+    setKind(k);
+    setWriting(true);
+  };
   const [toast, setToast] = useState<string | null>(null);
   const { add } = useEntries();
 
@@ -48,10 +54,20 @@ export default function Home() {
 
         <View style={styles.cards}>
           <Appear order={3}>
-            <Card label="Post-it" open={postIt} glow={saved} onPress={() => setPostIt(true)} />
+            <Card
+              label="Post-it"
+              open={writing && kind === 'postit'}
+              glow={saved.postit}
+              onPress={() => open('postit')}
+            />
           </Appear>
           <Appear order={4}>
-            <Card label="Diario" />
+            <Card
+              label="Diario"
+              open={writing && kind === 'diario'}
+              glow={saved.diario}
+              onPress={() => open('diario')}
+            />
           </Appear>
         </View>
       </View>
@@ -61,12 +77,13 @@ export default function Home() {
       </Appear>
 
       <PostItSheet
-        visible={postIt}
-        onClose={() => setPostIt(false)}
+        visible={writing}
+        kind={kind}
+        onClose={() => setWriting(false)}
         onSave={({ text, tags }) => {
-          add({ type: 'postit', text, tags, date: dayKey(new Date()) });
-          setPostIt(false);
-          setSaved((n) => n + 1);
+          add({ type: kind, text, tags, date: dayKey(new Date()) });
+          setWriting(false);
+          setSaved((n) => ({ ...n, [kind]: n[kind] + 1 }));
           setToast('Salvato nel calendario');
           if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }}

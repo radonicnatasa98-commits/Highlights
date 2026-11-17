@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -17,6 +16,7 @@ import {
 
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
+import { ArtKind, OnboardingArt } from '../components/OnboardingArt';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { logoMark, logoTagline, logoWordmark } from '../theme/icons';
@@ -27,27 +27,30 @@ const PAGES = [
   {
     title: 'Scrivi un Post-it o un diario',
     body: 'Esprimi la tua gratitudine come preferisci:\nscrivi un post-it breve e spontaneo oppure un diario più profondo e riflessivo.',
+    kind: 'pencil' as ArtKind,
     image: require('../../assets/images/pencil.png'),
     frame: { x: 76, y: 138, w: 223, h: 307 },
     fit: 'cover' as const,
-    opacity: 1,
+    shadow: undefined,
   },
   {
     title: 'Imposta il tuo promemoria giornaliero e futuro',
     body: 'Attiva il tuo Daily Ring: un promemoria gentile per non dimenticare di scrivere ogni giorno ciò per cui sei grato.',
+    kind: 'bell' as ArtKind,
     image: require('../../assets/images/bell.png'),
     frame: { x: 86, y: 164, w: 203, h: 250 },
     fit: 'cover' as const,
-    opacity: 1,
+    shadow: { cx: 187, cy: 438, w: 150 },
   },
   {
     title: 'Tracker AI',
     body: 'Scopri il tuo percorso con il Tracker AI: analizza i tuoi pensieri e osserva come cresce la tua gratitudine nel tempo.',
-    // Ritaglio dal render di Figma (la stella è ruotata e ha l'ombra sotto).
+    // Ritaglio dal render di Figma (la stella è ruotata), separato dallo sfondo; l'ombra è disegnata a parte.
+    kind: 'star' as ArtKind,
     image: require('../../assets/images/star.png'),
     frame: { x: 30, y: 125, w: 315, h: 370 },
     fit: 'fill' as const,
-    opacity: 1,
+    shadow: { cx: 180, cy: 444, w: 190 },
   },
 ];
 
@@ -71,6 +74,8 @@ export default function Onboarding() {
   const words = useAnimatedNumber(1);
   const zoom = useAnimatedNumber(0);
   const content = useAnimatedNumber(0);
+  // Posizione dello scorrimento orizzontale, per l'effetto profondità tra le pagine.
+  const scrollX = useAnimatedNumber(0);
 
   useEffect(() => {
     const anim = Animated.sequence([
@@ -81,7 +86,12 @@ export default function Onboarding() {
         Animated.timing(zoom, { toValue: 1, duration: 900, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
         Animated.sequence([
           Animated.delay(550),
-          Animated.timing(content, { toValue: 1, duration: 450, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          Animated.timing(content, {
+            toValue: 1,
+            duration: 450,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: true,
+          }),
         ]),
       ]),
     ]);
@@ -100,35 +110,63 @@ export default function Onboarding() {
 
   return (
     <Screen onWidth={setMeasured}>
-      <Animated.View style={[StyleSheet.absoluteFill, { opacity: content }]} pointerEvents={splashDone ? 'auto' : 'none'}>
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { opacity: content }]}
+        pointerEvents={splashDone ? 'auto' : 'none'}
+      >
         <ScrollView
           ref={scroller}
           horizontal
           pagingEnabled
+          contentContainerStyle={styles.pages}
           showsHorizontalScrollIndicator={false}
           onMomentumScrollEnd={onScrollEnd}
+          // Animato in JS: con il driver nativo scrollTo non risponde sul web.
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: false })}
           scrollEventThrottle={16}
         >
-          {PAGES.map((p, i) => (
-            <Pressable key={p.title} style={{ width }} onPress={() => i < PAGES.length - 1 && goTo(i + 1)}>
-              <Image
-                source={p.image}
-                contentFit={p.fit}
-                style={{
-                  position: 'absolute',
-                  left: offsetX + p.frame.x,
-                  top: top + p.frame.y,
-                  width: p.frame.w,
-                  height: p.frame.h,
-                  opacity: p.opacity,
-                }}
-              />
-              <View style={[styles.copy, { top: top + 499 }]}>
-                <Text style={styles.title}>{p.title}</Text>
-                <Text style={styles.body}>{p.body}</Text>
+          {PAGES.map((p, i) => {
+            // Mentre la pagina esce, l'illustrazione scorre più lenta del testo, rimpicciolisce e sfuma.
+            const range = [(i - 1) * width, i * width, (i + 1) * width];
+            const depth = {
+              opacity: scrollX.interpolate({ inputRange: range, outputRange: [0, 1, 0], extrapolate: 'clamp' }),
+              transform: [
+                {
+                  translateX: scrollX.interpolate({
+                    inputRange: range,
+                    outputRange: [-width * 0.45, 0, width * 0.45],
+                    extrapolate: 'clamp',
+                  }),
+                },
+                { scale: scrollX.interpolate({ inputRange: range, outputRange: [0.8, 1, 0.8], extrapolate: 'clamp' }) },
+              ],
+            };
+            return (
+              <View key={p.title} style={{ width, height: '100%' }}>
+                <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, depth]}>
+                  <OnboardingArt
+                    kind={p.kind}
+                    image={p.image}
+                    frame={p.frame}
+                    fit={p.fit}
+                    shadow={p.shadow}
+                    left={offsetX}
+                    top={top}
+                  />
+                </Animated.View>
+                <View style={[styles.copy, { top: top + 499 }]}>
+                  <Text style={styles.title}>{p.title}</Text>
+                  <Text style={styles.body}>{p.body}</Text>
+                </View>
+                {/* Area toccabile sopra all'illustrazione: tap per andare alla pagina successiva. */}
+                <Pressable
+                  style={StyleSheet.absoluteFill}
+                  onPress={() => i < PAGES.length - 1 && goTo(i + 1)}
+                  accessibilityLabel="Pagina successiva"
+                />
               </View>
-            </Pressable>
-          ))}
+            );
+          })}
         </ScrollView>
 
         <View style={[styles.stepper, { top: top + 68 }]} pointerEvents="none">
@@ -179,6 +217,7 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
+  pages: { height: '100%' },
   copy: { position: 'absolute', left: 24, right: 24, gap: 12 },
   title: { fontFamily: fonts.heavy, fontSize: 18, lineHeight: 24, color: colors.navy, textAlign: 'center' },
   body: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, color: colors.navy, textAlign: 'center' },

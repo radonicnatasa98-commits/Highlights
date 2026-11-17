@@ -1,6 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useState } from 'react';
+import { router } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Appear } from '../components/Appear';
@@ -10,6 +11,8 @@ import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
 import { Toast } from '../components/Toast';
+import { TodayEntry } from '../components/TodayEntry';
+import { WeekStrip } from '../components/WeekStrip';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { dayKey, useEntries } from '../store/entries';
@@ -28,7 +31,9 @@ export default function Home() {
   const [postIt, setPostIt] = useState(false);
   const [saved, setSaved] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
-  const { add } = useEntries();
+  const { entries, add } = useEntries();
+  const days = useMemo(() => new Set(entries.map((e) => e.date)), [entries]);
+  const latestToday = entries.filter((e) => e.date === dayKey(new Date())).at(-1);
 
   return (
     <Screen background="home" breathing>
@@ -36,28 +41,38 @@ export default function Home() {
         <BreathingLogo />
       </Appear>
 
+      <Appear order={1} style={[styles.week, { top: top + 112 }]}>
+        <WeekStrip days={days} />
+      </Appear>
+
       <View style={[styles.content, { top: top + 222 }]}>
         <View style={styles.heading}>
-          <Appear order={1} style={styles.date}>
+          <Appear order={2} style={styles.date}>
             <Icon icon={calendar} color={colors.navy} />
             <Text style={styles.dateText}>{today()}</Text>
           </Appear>
-          <Appear order={2}>
+          <Appear order={3}>
             <Text style={styles.title}>Cosa vuoi scrivere oggi?</Text>
           </Appear>
         </View>
 
         <View style={styles.cards}>
-          <Appear order={3}>
+          <Appear order={4}>
             <Card label="Post-it" open={postIt} glow={saved} sheenDelay={900} onPress={() => setPostIt(true)} />
           </Appear>
-          <Appear order={4}>
+          <Appear order={5}>
             <Card label="Diario" sheenDelay={1100} />
+          </Appear>
+          <Appear order={6}>
+            <TodayEntry
+              entry={latestToday}
+              onPress={() => (latestToday ? router.replace('/calendar') : setPostIt(true))}
+            />
           </Appear>
         </View>
       </View>
 
-      <Appear order={5} style={[styles.tab, { bottom: bottom + 24 }]}>
+      <Appear order={7} style={[styles.tab, { bottom: bottom + 24 }]}>
         <TabBar active="home" />
       </Appear>
 
@@ -221,6 +236,7 @@ function Card({ label, onPress, open = false, glow = 0, sheenDelay }: CardProps)
 
 const styles = StyleSheet.create({
   logo: { position: 'absolute', alignSelf: 'center' },
+  week: { position: 'absolute', left: 24, right: 24 },
   content: { position: 'absolute', left: 24, right: 24, gap: 32 },
   heading: { gap: 16, alignItems: 'center' },
   date: { flexDirection: 'row', alignItems: 'center', gap: 5 },

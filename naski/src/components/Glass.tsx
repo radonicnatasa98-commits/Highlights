@@ -1,3 +1,4 @@
+import { BlurView } from 'expo-blur';
 import { ReactNode, useId, useState } from 'react';
 import { LayoutChangeEvent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
@@ -11,6 +12,8 @@ type Props = {
   fill?: 'glass' | string;
   // Bordo "riflesso" interno, come nei bottoni e nella card del calendario.
   sheen?: boolean;
+  // Vetro smerigliato: sfoca quello che passa sotto (per esempio la barra in basso quando la pagina scorre).
+  frost?: boolean;
   style?: StyleProp<ViewStyle>;
   children?: ReactNode;
   onLayout?: (width: number, height: number) => void;
@@ -24,6 +27,7 @@ export function Glass({
   borderWidth = 2,
   fill = 'glass',
   sheen,
+  frost,
   style,
   children,
   onLayout: onSize,
@@ -41,6 +45,12 @@ export function Glass({
   return (
     // zIndex 0 crea un contesto di sovrapposizione: lo sfondo (-1) resta dietro ai figli anche sul web.
     <View style={[styles.stack, style]} onLayout={onLayout}>
+      {frost && (
+        <View pointerEvents="none" style={[styles.frost, { borderRadius: radius }]}>
+          <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+          <View style={[StyleSheet.absoluteFill, styles.frostVeil]} />
+        </View>
+      )}
       {w > 0 && (
         <View
           pointerEvents="none"
@@ -113,4 +123,6 @@ export function Glass({
 const styles = StyleSheet.create({
   stack: { zIndex: 0 },
   behind: { position: 'absolute', zIndex: -1 },
+  frost: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: -2 },
+  frostVeil: { backgroundColor: 'rgba(225,233,252,0.55)' },
 });

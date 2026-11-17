@@ -52,7 +52,7 @@ export function TabBar({ active }: Props) {
   const iconScale = bounce.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] });
 
   return (
-    <Glass radius={30} style={styles.bar} onLayout={setWidth}>
+    <Glass radius={30} frost style={styles.bar} onLayout={setWidth}>
       {/* Indicatore blu sotto l'icona attiva, tagliato dal bordo della barra come in Figma. */}
       <View pointerEvents="none" style={styles.clip}>
         <Animated.View style={[styles.indicator, { left: 21 + index * step, transform: [{ translateX: indicatorX }] }]}>

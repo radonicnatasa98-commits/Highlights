@@ -6,6 +6,7 @@ import { Button } from '../components/Button';
 import { Header } from '../components/Header';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TextField } from '../components/TextField';
+import { signIn } from '../store/session';
 
 export default function Login() {
   const top = useDesignTop();
@@ -15,7 +16,7 @@ export default function Login() {
   const passwordRef = useRef<TextInput>(null);
   const ready = email.trim().length > 0 && password.length > 0;
 
-  const submit = () => ready && router.replace('/home');
+  const submit = () => ready && signIn();
 
   return (
     <Screen>

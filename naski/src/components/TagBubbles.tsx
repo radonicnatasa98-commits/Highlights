@@ -6,7 +6,7 @@ import Svg, { Circle, Defs, Ellipse, LinearGradient, RadialGradient, Stop } from
 
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
-import { colors, fonts } from '../theme/tokens';
+import { fonts } from '../theme/tokens';
 
 const bubble = require('../../assets/images/bubble.png');
 
@@ -323,11 +323,12 @@ const styles = StyleSheet.create({
   clip: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: MAX / 2, overflow: 'hidden' },
   shadow: { position: 'absolute', left: 0, top: MAX - 8 },
   labelBox: { alignItems: 'center' },
+  // Più leggero del blu notte pieno: peso normale e blu più morbido.
   label: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: 20,
     lineHeight: 26,
-    color: colors.navy,
+    color: 'rgba(43,63,122,0.82)',
     textShadowColor: 'rgba(255,255,255,0.9)',
     textShadowRadius: 10,
     textShadowOffset: { width: 0, height: 0 },
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 14,
     letterSpacing: 1.4,
-    color: 'rgba(18,37,91,0.55)',
+    color: 'rgba(43,63,122,0.45)',
     marginTop: 2,
   },
 });

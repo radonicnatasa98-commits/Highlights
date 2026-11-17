@@ -8,6 +8,7 @@ import { Icon } from '../components/Icon';
 import { Screen, useDesignTop } from '../components/Screen';
 import { SocialButtons } from '../components/SocialButtons';
 import { TextField } from '../components/TextField';
+import { signIn } from '../store/session';
 import { checkCircle, xCircleSmall } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
@@ -48,7 +49,7 @@ export default function SignUp() {
     ] as const;
     const invalid = checks.find(([ok]) => !ok);
     if (invalid) return invalid[1].current?.focus();
-    router.replace('/home');
+    signIn();
   };
 
   return (
@@ -111,7 +112,7 @@ export default function SignUp() {
             </View>
             <Button label="Sign Up" size="small" onPress={submit} />
           </View>
-          <SocialButtons onGoogle={() => router.replace('/home')} onApple={() => router.replace('/home')} />
+          <SocialButtons onGoogle={signIn} onApple={signIn} />
         </ScrollView>
       </KeyboardAvoidingView>
     </Screen>

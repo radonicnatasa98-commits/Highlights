@@ -19,6 +19,7 @@ import { Icon } from '../components/Icon';
 import { ArtKind, OnboardingArt } from '../components/OnboardingArt';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
+import { isLoggedIn } from '../store/session';
 import { logoMark, logoTagline, logoWordmark } from '../theme/icons';
 import { colors, fonts } from '../theme/tokens';
 
@@ -69,6 +70,12 @@ export default function Onboarding() {
 
   const [page, setPage] = useState(0);
   const [splashDone, setSplashDone] = useState(false);
+  // Finché non sappiamo se l'utente ha già fatto l'accesso, non parte nessuna animazione.
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    isLoggedIn().then((yes) => (yes ? router.replace('/home') : setChecked(true)));
+  }, []);
   const scroller = useRef<ScrollView>(null);
 
   const words = useAnimatedNumber(1);
@@ -78,6 +85,7 @@ export default function Onboarding() {
   const scrollX = useAnimatedNumber(0);
 
   useEffect(() => {
+    if (!checked) return;
     const anim = Animated.sequence([
       Animated.delay(1200),
       Animated.timing(words, { toValue: 0, duration: 350, easing: Easing.out(Easing.quad), useNativeDriver: true }),
@@ -97,7 +105,7 @@ export default function Onboarding() {
     ]);
     anim.start(({ finished }) => finished && setSplashDone(true));
     return () => anim.stop();
-  }, [words, zoom, content]);
+  }, [checked, words, zoom, content]);
 
   const goTo = (i: number) => {
     scroller.current?.scrollTo({ x: i * width, animated: true });
@@ -191,7 +199,7 @@ export default function Onboarding() {
         </View>
       </Animated.View>
 
-      {!splashDone && (
+      {checked && !splashDone && (
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Animated.View
             style={{

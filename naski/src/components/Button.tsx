@@ -9,8 +9,9 @@ type Props = {
   onPress?: () => void;
   // "primary": pieno blu notte; "outline": solo bordo.
   variant?: 'primary' | 'outline';
-  // "large": 48px, Avenir 16 (onboarding, Salva); "small": 40px, Gilmer 14 (Sign up, Login).
-  size?: 'large' | 'small';
+  // "large": 48px, Avenir 16 (onboarding, Salva); "small": 40px, Gilmer 14 (Sign up, Login);
+  // "compact": 36px, Gilmer 12 (Cancella / Crea dei promemoria).
+  size?: 'large' | 'small' | 'compact';
   // Alcuni bottoni grandi del design (Elimina, Chiudi) usano Gilmer 16.
   gilmer?: boolean;
   disabled?: boolean;
@@ -20,7 +21,7 @@ type Props = {
 export function Button({ label, onPress, variant = 'primary', size = 'large', gilmer, disabled, style }: Props) {
   const [w, setW] = useState(0);
   const id = useId().replace(/:/g, '');
-  const h = size === 'large' ? 48 : 40;
+  const h = size === 'large' ? 48 : size === 'small' ? 40 : 36;
   const primary = variant === 'primary';
 
   return (
@@ -41,20 +42,42 @@ export function Button({ label, onPress, variant = 'primary', size = 'large', gi
         // Bordo interno di 1px con riflesso bianco, come nel componente Button di Figma.
         <Svg pointerEvents="none" width={w} height={h} style={StyleSheet.absoluteFill}>
           <Defs>
-            <LinearGradient id={`b${id}`} gradientUnits="userSpaceOnUse" x1={0.07 * w} y1={0} x2={0.126 * w} y2={1.279 * h}>
+            <LinearGradient
+              id={`b${id}`}
+              gradientUnits="userSpaceOnUse"
+              x1={0.07 * w}
+              y1={0}
+              x2={0.126 * w}
+              y2={1.279 * h}
+            >
               <Stop offset={0} stopColor="#ffffff" stopOpacity={0.4} />
               <Stop offset={0.41} stopColor="#ffffff" stopOpacity={0} />
               <Stop offset={0.57} stopColor="#ffffff" stopOpacity={0} />
               <Stop offset={1} stopColor="#ffffff" stopOpacity={0.1} />
             </LinearGradient>
           </Defs>
-          <Rect x={0.5} y={0.5} width={w - 1} height={h - 1} rx={(h - 1) / 2} fill="none" stroke={`url(#b${id})`} strokeWidth={1} />
+          <Rect
+            x={0.5}
+            y={0.5}
+            width={w - 1}
+            height={h - 1}
+            rx={(h - 1) / 2}
+            fill="none"
+            stroke={`url(#b${id})`}
+            strokeWidth={1}
+          />
         </Svg>
       )}
       <View pointerEvents="none">
         <Text
           style={[
-            size === 'large' ? (gilmer ? styles.labelGilmer : styles.labelLarge) : styles.labelSmall,
+            size === 'large'
+              ? gilmer
+                ? styles.labelGilmer
+                : styles.labelLarge
+              : size === 'small'
+                ? styles.labelSmall
+                : styles.labelCompact,
             { color: primary ? colors.white : colors.navy },
           ]}
         >
@@ -80,4 +103,5 @@ const styles = StyleSheet.create({
   labelLarge: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24 },
   labelGilmer: { fontFamily: fonts.button, fontSize: 16, lineHeight: 16 },
   labelSmall: { fontFamily: fonts.button, fontSize: 14, lineHeight: 16 },
+  labelCompact: { fontFamily: fonts.button, fontSize: 12, lineHeight: 16 },
 });

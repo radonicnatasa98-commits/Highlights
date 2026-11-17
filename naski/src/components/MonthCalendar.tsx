@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import type React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { dayKey } from '../store/entries';
@@ -8,7 +9,20 @@ import { Glass } from './Glass';
 import { Icon } from './Icon';
 
 // Nel design mese e giorni della settimana sono in inglese ("October 2025", "Mo Tu …").
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 const WEEKDAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
 type Cell = { date: Date; inMonth: boolean } | null;
@@ -19,8 +33,10 @@ function weeks(month: Date): Cell[][] {
   const lead = (first.getDay() + 6) % 7;
   const days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
   const cells: Cell[] = [];
-  for (let i = lead; i > 0; i--) cells.push({ date: new Date(first.getFullYear(), first.getMonth(), 1 - i), inMonth: false });
-  for (let d = 1; d <= days; d++) cells.push({ date: new Date(first.getFullYear(), first.getMonth(), d), inMonth: true });
+  for (let i = lead; i > 0; i--)
+    cells.push({ date: new Date(first.getFullYear(), first.getMonth(), 1 - i), inMonth: false });
+  for (let d = 1; d <= days; d++)
+    cells.push({ date: new Date(first.getFullYear(), first.getMonth(), d), inMonth: true });
   while (cells.length % 7) cells.push(null);
   const rows: Cell[][] = [];
   for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
@@ -33,14 +49,18 @@ type Props = {
   marked: Set<string>;
   onSelect: (key: string) => void;
   onMonthChange: (delta: number) => void;
+  // Card bianca piena (calendario a comparsa) invece del vetro.
+  solid?: boolean;
+  // Contenuto in fondo alla card (per esempio il link "Salva").
+  footer?: React.ReactNode;
 };
 
 // Componente "Calendar" dei frame Calendar_01–04.
-export function MonthCalendar({ month, selected, marked, onSelect, onMonthChange }: Props) {
+export function MonthCalendar({ month, selected, marked, onSelect, onMonthChange, solid, footer }: Props) {
   const today = dayKey(new Date());
 
   return (
-    <Glass radius={32} fill="rgba(255,255,255,0.3)" sheen style={styles.card}>
+    <Glass radius={32} fill={solid ? '#ffffff' : 'rgba(255,255,255,0.3)'} sheen style={styles.card}>
       <View style={styles.top}>
         <Pressable onPress={() => onMonthChange(-1)} hitSlop={10} accessibilityLabel="Mese precedente">
           <Icon icon={chevronLeft} color={colors.navy} />
@@ -112,6 +132,7 @@ export function MonthCalendar({ month, selected, marked, onSelect, onMonthChange
           ))}
         </View>
       </View>
+      {footer}
     </Glass>
   );
 }

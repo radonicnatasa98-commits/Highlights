@@ -12,12 +12,11 @@ import { Icon } from './Icon';
 
 export type Tab = 'home' | 'calendar' | 'tracker' | 'reminders';
 
-// Promemoria non ha ancora una schermata.
-const TABS: { key: Tab; icon: IconSvg; label: string; route?: '/home' | '/calendar' | '/tracker' }[] = [
+const TABS: { key: Tab; icon: IconSvg; label: string; route: '/home' | '/calendar' | '/tracker' | '/reminders' }[] = [
   { key: 'home', icon: homeSmile, label: 'Home', route: '/home' },
   { key: 'calendar', icon: calendarTab, label: 'Calendario', route: '/calendar' },
   { key: 'tracker', icon: star06, label: 'Tracker AI', route: '/tracker' },
-  { key: 'reminders', icon: bell01, label: 'Promemoria' },
+  { key: 'reminders', icon: bell01, label: 'Promemoria', route: '/reminders' },
 ];
 
 type Props = { active: Tab };
@@ -63,7 +62,7 @@ export function TabBar({ active }: Props) {
       {TABS.map((t) => (
         <Pressable
           key={t.key}
-          onPress={() => t.route && t.key !== active && router.replace(t.route)}
+          onPress={() => t.key !== active && router.replace(t.route)}
           hitSlop={12}
           accessibilityRole="tab"
           accessibilityLabel={t.label}

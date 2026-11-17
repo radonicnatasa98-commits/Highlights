@@ -11,6 +11,7 @@ import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { EntriesProvider } from '../store/entries';
+import { RemindersProvider } from '../store/reminders';
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -27,14 +28,21 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <EntriesProvider>
-        <Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: '#c6d7f6' } }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="signup" options={{ animation: 'slide_from_right' }} />
-          <Stack.Screen name="login" options={{ animation: 'slide_from_right' }} />
-          <Stack.Screen name="home" options={{ gestureEnabled: false }} />
-          <Stack.Screen name="calendar" options={{ gestureEnabled: false }} />
-          <Stack.Screen name="tracker" options={{ gestureEnabled: false }} />
-        </Stack>
+        <RemindersProvider>
+          <Stack
+            screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: '#c6d7f6' } }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="signup" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="login" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="home" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="calendar" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="tracker" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="reminders" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="reminders-choose" options={{ animation: 'slide_from_right' }} />
+            <Stack.Screen name="reminders-schedule" options={{ animation: 'slide_from_right' }} />
+          </Stack>
+        </RemindersProvider>
       </EntriesProvider>
     </SafeAreaProvider>
   );

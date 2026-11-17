@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { BackgroundAura } from './BackgroundAura';
 
 const backgrounds = {
   onboarding: require('../../assets/images/bg-onboarding.jpg'),
@@ -29,7 +30,7 @@ type Props = {
   children?: ReactNode;
   // Larghezza reale dello schermo dell'app (sul web può essere più stretta della finestra).
   onWidth?: (width: number) => void;
-  // Sfondo che "respira": le sfumature si spostano lentissimamente (ciclo di 24 secondi).
+  // Sfondo animato: l'immagine respira (ciclo di 24 secondi) e macchie di colore la attraversano.
   breathing?: boolean;
 };
 
@@ -67,6 +68,7 @@ export function Screen({ background = 'onboarding', children, onWidth, breathing
       <Animated.View style={[StyleSheet.absoluteFill, motion]}>
         <Image source={backgrounds[background]} style={StyleSheet.absoluteFill} contentFit="cover" />
       </Animated.View>
+      {breathing && <BackgroundAura />}
       {children}
     </View>
   );

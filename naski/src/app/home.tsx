@@ -1,7 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import { Appear } from '../components/Appear';
 import { Glass } from '../components/Glass';
@@ -49,10 +48,10 @@ export default function Home() {
 
         <View style={styles.cards}>
           <Appear order={3}>
-            <Card label="Post-it" open={postIt} glow={saved} phase={0} onPress={() => setPostIt(true)} />
+            <Card label="Post-it" open={postIt} glow={saved} onPress={() => setPostIt(true)} />
           </Appear>
           <Appear order={4}>
-            <Card label="Diario" phase={0.5} />
+            <Card label="Diario" />
           </Appear>
         </View>
       </View>
@@ -111,11 +110,9 @@ type CardProps = {
   open?: boolean;
   // Cambia a ogni salvataggio: la card fa un breve bagliore.
   glow?: number;
-  // Sfasamento dello sfondo animato, così le due card non si muovono all'unisono (da 0 a 1).
-  phase: number;
 };
 
-function Card({ label, onPress, open = false, glow = 0, phase }: CardProps) {
+function Card({ label, onPress, open = false, glow = 0 }: CardProps) {
   const press = useAnimatedNumber(0);
   const turn = useAnimatedNumber(0);
   const flash = useAnimatedNumber(0);
@@ -156,7 +153,6 @@ function Card({ label, onPress, open = false, glow = 0, phase }: CardProps) {
       <Animated.View style={{ transform: [{ scale }] }}>
         <Glass radius={30} style={styles.card}>
           <View pointerEvents="none" style={styles.clip}>
-            <CardAura phase={phase} />
             <Animated.View
               style={[
                 StyleSheet.absoluteFill,
@@ -184,67 +180,6 @@ function Card({ label, onPress, open = false, glow = 0, phase }: CardProps) {
   );
 }
 
-// Sfondo animato della card: tre macchie di colore sfumate (azzurro, blu e lilla della palette)
-// che girano lentamente sotto il vetro, ciascuna con il suo ritmo.
-const AURA = [
-  { color: '#19a9f9', opacity: 0.32, duration: 9000, from: [-60, -70], to: [170, 10] },
-  { color: '#2c63f3', opacity: 0.2, duration: 12000, from: [190, -40], to: [20, -110] },
-  { color: '#b7baed', opacity: 0.55, duration: 10500, from: [60, -130], to: [200, -60] },
-];
-
-function CardAura({ phase }: { phase: number }) {
-  const reduced = useReducedMotion();
-  const a = useAnimatedNumber(phase);
-  const b = useAnimatedNumber(1 - phase);
-  const c = useAnimatedNumber(phase);
-  const drivers = [a, b, c];
-
-  useEffect(() => {
-    if (reduced) return;
-    const ease = Easing.inOut(Easing.sin);
-    const loops = [a, b, c].map((v, i) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(v, { toValue: 1, duration: AURA[i].duration, easing: ease, useNativeDriver: true }),
-          Animated.timing(v, { toValue: 0, duration: AURA[i].duration, easing: ease, useNativeDriver: true }),
-        ]),
-      ),
-    );
-    loops.forEach((l) => l.start());
-    return () => loops.forEach((l) => l.stop());
-  }, [reduced, a, b, c]);
-
-  return (
-    <>
-      {AURA.map((blob, i) => (
-        <Animated.View
-          key={blob.color}
-          style={[
-            styles.aura,
-            {
-              transform: [
-                { translateX: drivers[i].interpolate({ inputRange: [0, 1], outputRange: [blob.from[0], blob.to[0]] }) },
-                { translateY: drivers[i].interpolate({ inputRange: [0, 1], outputRange: [blob.from[1], blob.to[1]] }) },
-                { scale: drivers[i].interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.9, 1.15, 0.9] }) },
-              ],
-            },
-          ]}
-        >
-          <Svg width={220} height={220}>
-            <Defs>
-              <RadialGradient id={`aura${i}`} cx="50%" cy="50%" r="50%">
-                <Stop offset="0" stopColor={blob.color} stopOpacity={blob.opacity} />
-                <Stop offset="1" stopColor={blob.color} stopOpacity={0} />
-              </RadialGradient>
-            </Defs>
-            <Circle cx={110} cy={110} r={110} fill={`url(#aura${i})`} />
-          </Svg>
-        </Animated.View>
-      ))}
-    </>
-  );
-}
-
 const styles = StyleSheet.create({
   logo: { position: 'absolute', alignSelf: 'center' },
   content: { position: 'absolute', left: 24, right: 24, gap: 32 },
@@ -261,7 +196,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   clip: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 30, overflow: 'hidden' },
-  aura: { position: 'absolute', width: 220, height: 220 },
   flash: { backgroundColor: '#ffffff', borderRadius: 30 },
   cardLabel: { fontFamily: fonts.heavy, fontSize: 18, lineHeight: 24, color: colors.navy },
   tab: { position: 'absolute', left: 24, right: 24 },

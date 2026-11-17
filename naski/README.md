@@ -11,12 +11,14 @@ App per coltivare la gratitudine, costruita con Expo (React Native + Expo Router
 | Login | Login → Login_01 | `/login` |
 | Home + Post-it | HomePage_01–03 | `/home` |
 | Calendario | Calendar_01–04 | `/calendar` |
+| Tracker AI | TrackerAI | `/tracker` |
 
 Collegamenti:
 - il logo perde la scritta e si ingrandisce fino a uscire dallo schermo, poi compaiono le 3 schermate di onboarding (swipe o tap per avanzare);
 - "Create an account" apre il Sign up, "Log in" apre il Login; completati, portano alla Home;
 - in Home, "Post-it" apre il foglio per scrivere (massimo 30 caratteri) e scegliere uno o più tag; "Salva" lo registra nel giorno di oggi;
-- la seconda icona della barra in basso apre il Calendario: i giorni con un puntino hanno degli scritti, toccandone uno compaiono sotto; la matita apre la modifica (Elimina / Salva), la freccia apre la condivisione (copia, WhatsApp, Instagram); il "+" scrive un Post-it nel giorno selezionato.
+- la seconda icona della barra in basso apre il Calendario: i giorni con un puntino hanno degli scritti, toccandone uno compaiono sotto; la matita apre la modifica (Elimina / Salva), la freccia apre la condivisione (copia, WhatsApp, Instagram); il "+" scrive un Post-it nel giorno selezionato;
+- la terza icona apre il Tracker AI: una bolla per ogni tag usato negli ultimi 7 giorni o nel mese, più grande quanto più spesso l'hai scelto; toccando la frase in fondo la condividi.
 
 ## Avvio
 

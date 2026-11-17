@@ -16,20 +16,23 @@ export function dayKey(d: Date) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-// Scritti di esempio per il prototipo, nei giorni passati del mese corrente,
-// così il calendario mostra subito i puntini. Da togliere quando ci sarà un backend.
+// Scritti di esempio per il prototipo, nei giorni prima di oggi, così il calendario mostra subito
+// i puntini e il Tracker AI ha qualcosa da contare. Da togliere quando ci sarà un backend.
 function exampleEntries(): Entry[] {
   const today = new Date();
-  const day = (n: number) => dayKey(new Date(today.getFullYear(), today.getMonth(), n));
-  const samples: Omit<Entry, 'id' | 'date'>[] = [
-    { type: 'postit', text: 'Il caffè con mia sorella', tags: ['Famiglia'] },
-    { type: 'diario', text: 'Oggi ho finito il progetto a cui lavoravo da settimane. Sono grata alla squadra che mi ha aiutata e a me stessa per non aver mollato.', tags: ['Lavoro e studio'] },
-    { type: 'postit', text: 'Una lunga passeggiata al sole', tags: ['Salute e Benessere'] },
-    { type: 'postit', text: 'La cena con gli amici di sempre', tags: ['Amicizia'] },
-    { type: 'diario', text: 'Giornata lenta e tranquilla: ho letto, cucinato e chiamato la nonna.', tags: ['Tempo libero', 'Famiglia'] },
+  const daysAgo = (n: number) => dayKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() - n));
+  const samples: (Omit<Entry, 'id' | 'date'> & { ago: number })[] = [
+    { ago: 1, type: 'postit', text: 'Il caffè con mia sorella', tags: ['Famiglia'] },
+    { ago: 2, type: 'postit', text: 'La cena con gli amici di sempre', tags: ['Amicizia', 'Famiglia'] },
+    { ago: 3, type: 'diario', text: 'Oggi ho finito il progetto a cui lavoravo da settimane. Sono grata alla squadra che mi ha aiutata e a me stessa per non aver mollato.', tags: ['Lavoro e studio'] },
+    { ago: 4, type: 'postit', text: 'Una lunga passeggiata al sole', tags: ['Salute e Benessere', 'Famiglia'] },
+    { ago: 5, type: 'postit', text: 'Il messaggio di un vecchio amico', tags: ['Amicizia'] },
+    { ago: 8, type: 'diario', text: 'Giornata lenta e tranquilla: ho letto, cucinato e chiamato la nonna.', tags: ['Tempo libero', 'Famiglia'] },
+    { ago: 10, type: 'postit', text: 'Yoga al mattino', tags: ['Salute e Benessere'] },
+    { ago: 12, type: 'postit', text: 'Un pomeriggio di pioggia e un buon libro', tags: ['Altro'] },
+    { ago: 15, type: 'postit', text: 'Pranzo della domenica a casa dei miei', tags: ['Famiglia'] },
   ];
-  const days = [1, 2, 3, 6, 7].filter((n) => n < today.getDate());
-  return days.map((n, i) => ({ ...samples[i], id: `example-${n}`, date: day(n) }));
+  return samples.map(({ ago, ...e }) => ({ ...e, id: `example-${ago}`, date: daysAgo(ago) }));
 }
 
 type Store = {

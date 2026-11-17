@@ -12,11 +12,11 @@ import { Icon } from './Icon';
 
 export type Tab = 'home' | 'calendar' | 'tracker' | 'reminders';
 
-// Tracker AI e Promemoria non hanno ancora una schermata.
-const TABS: { key: Tab; icon: IconSvg; label: string; route?: '/home' | '/calendar' }[] = [
+// Promemoria non ha ancora una schermata.
+const TABS: { key: Tab; icon: IconSvg; label: string; route?: '/home' | '/calendar' | '/tracker' }[] = [
   { key: 'home', icon: homeSmile, label: 'Home', route: '/home' },
   { key: 'calendar', icon: calendarTab, label: 'Calendario', route: '/calendar' },
-  { key: 'tracker', icon: star06, label: 'Tracker AI' },
+  { key: 'tracker', icon: star06, label: 'Tracker AI', route: '/tracker' },
   { key: 'reminders', icon: bell01, label: 'Promemoria' },
 ];
 

@@ -33,6 +33,7 @@ export default function RootLayout() {
           <Stack.Screen name="login" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="home" options={{ gestureEnabled: false }} />
           <Stack.Screen name="calendar" options={{ gestureEnabled: false }} />
+          <Stack.Screen name="tracker" options={{ gestureEnabled: false }} />
         </Stack>
       </EntriesProvider>
     </SafeAreaProvider>

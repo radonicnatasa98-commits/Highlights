@@ -1,8 +1,7 @@
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import { Appear } from '../components/Appear';
 import { Glass } from '../components/Glass';
@@ -11,8 +10,6 @@ import { PostItSheet } from '../components/PostItSheet';
 import { Screen, useDesignBottom, useDesignTop } from '../components/Screen';
 import { TabBar } from '../components/TabBar';
 import { Toast } from '../components/Toast';
-import { TodayEntry } from '../components/TodayEntry';
-import { WeekStrip } from '../components/WeekStrip';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { dayKey, useEntries } from '../store/entries';
@@ -31,9 +28,7 @@ export default function Home() {
   const [postIt, setPostIt] = useState(false);
   const [saved, setSaved] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
-  const { entries, add } = useEntries();
-  const days = useMemo(() => new Set(entries.map((e) => e.date)), [entries]);
-  const latestToday = entries.filter((e) => e.date === dayKey(new Date())).at(-1);
+  const { add } = useEntries();
 
   return (
     <Screen background="home" breathing>
@@ -41,38 +36,28 @@ export default function Home() {
         <BreathingLogo />
       </Appear>
 
-      <Appear order={1} style={[styles.week, { top: top + 112 }]}>
-        <WeekStrip days={days} />
-      </Appear>
-
       <View style={[styles.content, { top: top + 222 }]}>
         <View style={styles.heading}>
-          <Appear order={2} style={styles.date}>
+          <Appear order={1} style={styles.date}>
             <Icon icon={calendar} color={colors.navy} />
             <Text style={styles.dateText}>{today()}</Text>
           </Appear>
-          <Appear order={3}>
+          <Appear order={2}>
             <Text style={styles.title}>Cosa vuoi scrivere oggi?</Text>
           </Appear>
         </View>
 
         <View style={styles.cards}>
+          <Appear order={3}>
+            <Card label="Post-it" open={postIt} glow={saved} phase={0} onPress={() => setPostIt(true)} />
+          </Appear>
           <Appear order={4}>
-            <Card label="Post-it" open={postIt} glow={saved} sheenDelay={900} onPress={() => setPostIt(true)} />
-          </Appear>
-          <Appear order={5}>
-            <Card label="Diario" sheenDelay={1100} />
-          </Appear>
-          <Appear order={6}>
-            <TodayEntry
-              entry={latestToday}
-              onPress={() => (latestToday ? router.replace('/calendar') : setPostIt(true))}
-            />
+            <Card label="Diario" phase={0.5} />
           </Appear>
         </View>
       </View>
 
-      <Appear order={7} style={[styles.tab, { bottom: bottom + 24 }]}>
+      <Appear order={5} style={[styles.tab, { bottom: bottom + 24 }]}>
         <TabBar active="home" />
       </Appear>
 
@@ -126,17 +111,14 @@ type CardProps = {
   open?: boolean;
   // Cambia a ogni salvataggio: la card fa un breve bagliore.
   glow?: number;
-  // Primo passaggio del riflesso, dopo l'entrata.
-  sheenDelay: number;
+  // Sfasamento dello sfondo animato, così le due card non si muovono all'unisono (da 0 a 1).
+  phase: number;
 };
 
-function Card({ label, onPress, open = false, glow = 0, sheenDelay }: CardProps) {
-  const reduced = useReducedMotion();
+function Card({ label, onPress, open = false, glow = 0, phase }: CardProps) {
   const press = useAnimatedNumber(0);
   const turn = useAnimatedNumber(0);
   const flash = useAnimatedNumber(0);
-  const sheen = useAnimatedNumber(0);
-  const [width, setWidth] = useState(327);
 
   // Pressione: la card si abbassa con una molla.
   const pressTo = (v: number) =>
@@ -155,21 +137,6 @@ function Card({ label, onPress, open = false, glow = 0, sheenDelay }: CardProps)
     ]).start();
   }, [glow, flash]);
 
-  // Riflesso di luce che attraversa il vetro: dopo l'entrata, poi ogni 7 secondi.
-  useEffect(() => {
-    if (reduced) return;
-    const pass = Animated.sequence([
-      Animated.timing(sheen, { toValue: 1, duration: 1300, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(sheen, { toValue: 0, duration: 0, useNativeDriver: true }),
-    ]);
-    const loop = Animated.sequence([
-      Animated.delay(sheenDelay),
-      Animated.loop(Animated.sequence([pass, Animated.delay(7000)])),
-    ]);
-    loop.start();
-    return () => loop.stop();
-  }, [reduced, sheen, sheenDelay]);
-
   const scale = Animated.add(
     press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.97] }),
     flash.interpolate({ inputRange: [0, 1], outputRange: [0, 0.02] }),
@@ -187,26 +154,9 @@ function Card({ label, onPress, open = false, glow = 0, sheenDelay }: CardProps)
       accessibilityLabel={label}
     >
       <Animated.View style={{ transform: [{ scale }] }}>
-        <Glass radius={30} style={styles.card} onLayout={setWidth}>
+        <Glass radius={30} style={styles.card}>
           <View pointerEvents="none" style={styles.clip}>
-            <Animated.View
-              style={[
-                styles.sheen,
-                {
-                  transform: [
-                    { translateX: sheen.interpolate({ inputRange: [0, 1], outputRange: [-160, width + 40] }) },
-                    { rotate: '20deg' },
-                  ],
-                },
-              ]}
-            >
-              <LinearGradient
-                colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.45)', 'rgba(255,255,255,0)']}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={StyleSheet.absoluteFill}
-              />
-            </Animated.View>
+            <CardAura phase={phase} />
             <Animated.View
               style={[
                 StyleSheet.absoluteFill,
@@ -234,9 +184,69 @@ function Card({ label, onPress, open = false, glow = 0, sheenDelay }: CardProps)
   );
 }
 
+// Sfondo animato della card: tre macchie di colore sfumate (azzurro, blu e lilla della palette)
+// che girano lentamente sotto il vetro, ciascuna con il suo ritmo.
+const AURA = [
+  { color: '#19a9f9', opacity: 0.32, duration: 9000, from: [-60, -70], to: [170, 10] },
+  { color: '#2c63f3', opacity: 0.2, duration: 12000, from: [190, -40], to: [20, -110] },
+  { color: '#b7baed', opacity: 0.55, duration: 10500, from: [60, -130], to: [200, -60] },
+];
+
+function CardAura({ phase }: { phase: number }) {
+  const reduced = useReducedMotion();
+  const a = useAnimatedNumber(phase);
+  const b = useAnimatedNumber(1 - phase);
+  const c = useAnimatedNumber(phase);
+  const drivers = [a, b, c];
+
+  useEffect(() => {
+    if (reduced) return;
+    const ease = Easing.inOut(Easing.sin);
+    const loops = [a, b, c].map((v, i) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(v, { toValue: 1, duration: AURA[i].duration, easing: ease, useNativeDriver: true }),
+          Animated.timing(v, { toValue: 0, duration: AURA[i].duration, easing: ease, useNativeDriver: true }),
+        ]),
+      ),
+    );
+    loops.forEach((l) => l.start());
+    return () => loops.forEach((l) => l.stop());
+  }, [reduced, a, b, c]);
+
+  return (
+    <>
+      {AURA.map((blob, i) => (
+        <Animated.View
+          key={blob.color}
+          style={[
+            styles.aura,
+            {
+              transform: [
+                { translateX: drivers[i].interpolate({ inputRange: [0, 1], outputRange: [blob.from[0], blob.to[0]] }) },
+                { translateY: drivers[i].interpolate({ inputRange: [0, 1], outputRange: [blob.from[1], blob.to[1]] }) },
+                { scale: drivers[i].interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.9, 1.15, 0.9] }) },
+              ],
+            },
+          ]}
+        >
+          <Svg width={220} height={220}>
+            <Defs>
+              <RadialGradient id={`aura${i}`} cx="50%" cy="50%" r="50%">
+                <Stop offset="0" stopColor={blob.color} stopOpacity={blob.opacity} />
+                <Stop offset="1" stopColor={blob.color} stopOpacity={0} />
+              </RadialGradient>
+            </Defs>
+            <Circle cx={110} cy={110} r={110} fill={`url(#aura${i})`} />
+          </Svg>
+        </Animated.View>
+      ))}
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
   logo: { position: 'absolute', alignSelf: 'center' },
-  week: { position: 'absolute', left: 24, right: 24 },
   content: { position: 'absolute', left: 24, right: 24, gap: 32 },
   heading: { gap: 16, alignItems: 'center' },
   date: { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -251,7 +261,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   clip: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 30, overflow: 'hidden' },
-  sheen: { position: 'absolute', top: -40, bottom: -40, width: 110 },
+  aura: { position: 'absolute', width: 220, height: 220 },
   flash: { backgroundColor: '#ffffff', borderRadius: 30 },
   cardLabel: { fontFamily: fonts.heavy, fontSize: 18, lineHeight: 24, color: colors.navy },
   tab: { position: 'absolute', left: 24, right: 24 },
